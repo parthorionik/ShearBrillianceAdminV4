@@ -245,6 +245,7 @@ const Board = () => {
                 : status === "canceled"
                   ? curr.cancel_time
                   : curr.in_salon_time,
+          paymentDetails: curr.paymentDetails
         };
         acc[status].cards.push(obj);
         acc[status].badge = acc[status].cards?.length; // Update count
@@ -1226,6 +1227,8 @@ const Board = () => {
       const processedValues = {
         ...values,
         mobile_number: formattedMobileNumber,
+        payment_mode: "Pay_In_Person",
+        tip: 0
       };
 
       values.firstname.trim();
@@ -1260,6 +1263,7 @@ const Board = () => {
           appointmentToggle();
         })
         .catch((error) => {
+          setShowAppointmentSpinner(false);
           console.error("Error creating appointment:", error);
         });
     },
@@ -2123,6 +2127,35 @@ const Board = () => {
                                             <div className="flex-grow-1">
                                               <b>Salon: </b>{" "}
                                               <span>{card.salon}</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="card-footer border-top-dashed cursor-auto">
+                                          <div>
+                                            <div className="flex-grow-1">
+                                              <b>Payment:</b>
+                                              <b
+                                                className="px-2 py-1"
+                                                style={{
+                                                  color: card.paymentDetails?.paymentStatus?.toLowerCase() === 'success' ? 'green' : 'red',
+                                                }}
+                                              >
+                                                {card.paymentDetails?.paymentStatus ?? 'Pending'}
+                                              </b>
+                                              {
+                                                card.paymentDetails?.paymentStatus?.toLowerCase() === 'success' && (
+                                                  <Link
+                                                    to={card.paymentDetails?.receiptUrl}
+                                                    target="_blank"
+                                                    className="btn btn-warning p-0 px-2"
+                                                    data-tooltip-id="download-tooltip"
+                                                    data-tooltip-content="Download Receipt"
+                                                    onClick={() => handlePrint()}
+                                                  >
+                                                    <i className="ri-download-line"></i> Receipt
+                                                  </Link>
+                                                )
+                                              }
                                             </div>
                                           </div>
                                         </div>

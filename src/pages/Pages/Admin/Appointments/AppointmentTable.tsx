@@ -551,6 +551,8 @@ const AppointmentTable: React.FC = () => {
         const processedValues = {
           ...values,
           mobile_number: indianMobileNumber, // Replace the original mobile number with the Indian format
+          payment_mode: "Pay_In_Person",
+          tip: 0
         };
         console.log("Submitted values:", processedValues);
         const response = await createAppointment(processedValues);

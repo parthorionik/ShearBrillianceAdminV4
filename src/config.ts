@@ -24,7 +24,7 @@ interface Config {
   commonText: CommonTextConfig;
 }
 // const API_MAIN_URL = "https://shear-brilliance-apiv2.onrender.com";
-const API_MAIN_URL = "https://shear-brilliance-api-v3-q15c.onrender.com";
+const API_MAIN_URL = "https://shearbrillianceapi-version4.onrender.com";
 const config: Config = {
   google: {
     API_KEY: "",
