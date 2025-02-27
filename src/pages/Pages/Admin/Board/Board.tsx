@@ -141,7 +141,11 @@ const Board = () => {
   const [startIndex, setStartIndex] = useState(0);
   const [activeFilter, setActiveFilter] = useState("All");
   const [activeFilterBarber, setActiveFilterBarber] = useState<any>();
-
+  const [tipPercentage, setTipPercentage] = useState(null);
+  const [customTip, setCustomTip] = useState('');
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [finalAmount, setFinalAmount] = useState(0);
+  const [tipAmount, setTipAmount] = useState(0);
   const [showAppointmentSpinner, setShowAppointmentSpinner] =
     useState<boolean>(false);
 
@@ -728,16 +732,19 @@ const Board = () => {
       (sum: any, item: any) => sum + item.default_service_time,
       0
     );
-    setTotalServiceTime(totalServiceTime);
-    const valuesArray = selected.map((serv: any) => parseInt(serv.value, 10));
-    appointmentFormik.setFieldValue("service_ids", valuesArray);
-    if (totalServiceTime > 0) {
-      getBarberScheduleData(selectedBarberId, totalServiceTime);
-    } else {
-      toast.warning("Please first select atleast one service!!!");
-      setIsAppointmentAvailable(false);
-    }
-    console.log("Selected options:", selected);
+    setTimeout(() => {
+      setTotalServiceTime(totalServiceTime);
+      const valuesArray = selected.map((serv: any) => parseInt(serv.value, 10));
+      appointmentFormik.setFieldValue("service_ids", valuesArray);
+      debugger;
+      if (totalServiceTime > 0) {
+        getBarberScheduleData(selectedBarberId, totalServiceTime, selected);
+      } else {
+        toast.warning("Please first select atleast one service!!!");
+        setIsAppointmentAvailable(false);
+      }
+      console.log("Selected options:", selected);
+    }, 500);
   };
 
   // Custom styles for react-select
@@ -1001,6 +1008,7 @@ const Board = () => {
   const handleBarberChange = async (event: any) => {
     if (event.target.value) {
       const selectedBarbrId = Number(event.target.value);
+      debugger;
       setSelectedBarberId(selectedBarbrId);
       const barberDetails = barberSessionsData.find(
         (barber: any) => barber.id === selectedBarbrId
@@ -1011,16 +1019,27 @@ const Board = () => {
     // Perform any additional logic here based on the selected option
   };
 
-  const getBarberScheduleData = async (barberId: any, serviceTime: any) => {
+  const getBarberScheduleData = async (barberId: any, serviceTime: any, services?: any) => {
     try {
       if (barberId && serviceTime) {
         const obj = {
           BarberId: barberId,
           service_time: serviceTime,
         };
+        debugger;
         const sessionResponse = await getBarberSessionByBarber(obj);
         if (parseInt(sessionResponse) === 102) {
           setIsAppointmentAvailable(true);
+          debugger;
+          let total;
+          if (services) {
+            total = services.reduce((sum: any, service: any) => sum + parseFloat(service.min_price), 0);
+          } else {
+            total = selectedOptions.reduce((sum: any, service: any) => sum + parseFloat(service.min_price), 0);
+          }
+          // const total = selectedOptions;
+          setTotalPrice(total);
+          calculateFinalAmount(total, tipPercentage, customTip);
         } else {
           setIsAppointmentAvailable(false);
           if (parseInt(sessionResponse) === 100) {
@@ -1228,7 +1247,7 @@ const Board = () => {
         ...values,
         mobile_number: formattedMobileNumber,
         payment_mode: "Pay_In_Person",
-        tip: 0
+        tip: tipAmount
       };
 
       values.firstname.trim();
@@ -1413,6 +1432,32 @@ const Board = () => {
     if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
       e.preventDefault();
     }
+  };
+  const handleTipChange = (e: any) => {
+    const value = e.target.value;
+    setTipPercentage(value);
+    if (value !== 'custom') {
+      setCustomTip('');
+      calculateFinalAmount(totalPrice, value, '');
+    }
+  };
+
+  const handleCustomTipChange = (e: any) => {
+    const value = e.target.value;
+    setCustomTip(value);
+    calculateFinalAmount(totalPrice, 'custom', value);
+  };
+
+  const calculateFinalAmount = (total: any, tip: any, custom: any) => {
+    if (!tip || tip === null) {
+      setFinalAmount(total); // No tip, just use total
+      return;
+    }
+
+    debugger;
+    let tipAmount = tip === 'custom' ? parseFloat(custom || 0) : (total * parseFloat(tip)) / 100;
+    setTipAmount(tipAmount);
+    setFinalAmount(total + tipAmount);
   };
 
   const handleConfirmationCard = async () => {
@@ -1637,14 +1682,14 @@ const Board = () => {
   };
 
   const toggleBarberModal = () => {
-    if (isBarberModalOpen) {
-      setSelectedBarber(null);
-      setSelectedBarberId(null);
-    }
     setIsBarberModalOpen(!isBarberModalOpen);
   };
 
   const cancelBarberModal = () => {
+    // if (isBarberModalOpen) {
+    //   setSelectedBarber(null);
+    //   setSelectedBarberId(null);
+    // }
     toggleBarberModal();
   };
 
@@ -2629,6 +2674,53 @@ const Board = () => {
                     {appointmentFormik.errors.mobile_number}
                   </FormFeedback>
                 ) : null}
+              </Col>
+              <Col lg={12}>
+                <Label className="form-label me-1">Tip</Label>
+                <div className="btn-group">
+                  {[2, 5, 10].map((percentage) => (
+                    <Label
+                      key={percentage}
+                      className={`btn btn-outline-primary ${tipPercentage == percentage ? 'active' : ''}`}
+                    >
+                      <Input
+                        type="radio"
+                        name="tip"
+                        value={percentage}
+                        checked={tipPercentage == percentage}
+                        onChange={handleTipChange}
+                        className="d-none"
+                      />
+                      {percentage}%
+                    </Label>
+                  ))}
+                  <Label className={`btn btn-outline-primary ${tipPercentage === 'custom' ? 'active' : ''}`}>
+                    <Input
+                      type="radio"
+                      name="tip"
+                      value="custom"
+                      checked={tipPercentage === 'custom'}
+                      onChange={handleTipChange}
+                      className="d-none"
+                    />
+                    Custom
+                  </Label>
+                </div>
+
+                {tipPercentage === 'custom' && (
+                  <Input
+                    type="number"
+                    placeholder="Enter custom tip"
+                    value={customTip}
+                    onChange={handleCustomTipChange}
+                    className="mt-2"
+                  />
+                )}
+              </Col>
+
+              <Col lg={12} className="d-flex justify-content-between align-item-center">
+                <h5>Total: ${totalPrice.toFixed(2)}</h5>
+                <h5>Final Amount: ${finalAmount.toFixed(2)}</h5>
               </Col>
             </Row>
           </ModalBody>
