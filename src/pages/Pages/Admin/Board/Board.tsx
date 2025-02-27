@@ -736,7 +736,6 @@ const Board = () => {
       setTotalServiceTime(totalServiceTime);
       const valuesArray = selected.map((serv: any) => parseInt(serv.value, 10));
       appointmentFormik.setFieldValue("service_ids", valuesArray);
-      debugger;
       if (totalServiceTime > 0) {
         getBarberScheduleData(selectedBarberId, totalServiceTime, selected);
       } else {
@@ -810,7 +809,7 @@ const Board = () => {
     const statusData = { status: selectedCardNewStatus };
     await updateAppointmentStatus(parseInt(selectedCard?.id), statusData);
 
-    toast.success("Appointent updated successfully", { autoClose: 3000 });
+    toast.success("Appointment updated successfully", { autoClose: 3000 });
     if (selectedCardNewStatus === "canceled") {
       setCancelLoader(false);
     } else if (selectedCardNewStatus === "completed") {
@@ -1008,7 +1007,6 @@ const Board = () => {
   const handleBarberChange = async (event: any) => {
     if (event.target.value) {
       const selectedBarbrId = Number(event.target.value);
-      debugger;
       setSelectedBarberId(selectedBarbrId);
       const barberDetails = barberSessionsData.find(
         (barber: any) => barber.id === selectedBarbrId
@@ -1026,11 +1024,9 @@ const Board = () => {
           BarberId: barberId,
           service_time: serviceTime,
         };
-        debugger;
         const sessionResponse = await getBarberSessionByBarber(obj);
         if (parseInt(sessionResponse) === 102) {
           setIsAppointmentAvailable(true);
-          debugger;
           let total;
           if (services) {
             total = services.reduce((sum: any, service: any) => sum + parseFloat(service.min_price), 0);
@@ -1143,7 +1139,7 @@ const Board = () => {
         const timeData = { additionalTime: parseInt(values.additionalTime) };
         await updateAppointmentWaitTime(values.appointment_id, timeData);
         waitTimeToggle();
-        toast.success("Appointent updated successfully", { autoClose: 3000 });
+        toast.success("Appointment updated successfully", { autoClose: 3000 });
         const response: any = await fetchBoardAppointments(null, null);
         if (activeFilterBarber) {
           if (activeFilterBarber?.id === "all") {
@@ -1260,6 +1256,11 @@ const Board = () => {
             autoClose: 3000,
           });
           setShowAppointmentSpinner(false);
+          setTotalPrice(0);
+          setFinalAmount(0);
+          setTipPercentage(null);
+          setTipAmount(0);
+          setCustomTip('');
           appointmentFormik.resetForm();
           if (
             storeRoleInfo?.role_name === "Salon Manager" ||
@@ -1454,7 +1455,6 @@ const Board = () => {
       return;
     }
 
-    debugger;
     let tipAmount = tip === 'custom' ? parseFloat(custom || 0) : (total * parseFloat(tip)) / 100;
     setTipAmount(tipAmount);
     setFinalAmount(total + tipAmount);
@@ -1525,7 +1525,7 @@ const Board = () => {
           await updateAppointmentStatus(movedCard.id, statusData);
 
           setShowLoader(true);
-          toast.success("Appointent updated successfully", { autoClose: 3000 });
+          toast.success("Appointment updated successfully", { autoClose: 3000 });
           const response: any = await fetchBoardAppointments(null, null);
           if (activeFilterBarber) {
             if (activeFilterBarber.id === "all") {
