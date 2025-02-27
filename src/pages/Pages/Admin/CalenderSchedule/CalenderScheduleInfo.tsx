@@ -22,10 +22,10 @@ import {
 // Formik
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { toast} from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TableContainer from "Components/Common/TableContainerReactTable";
-import {fetchBarberBySalon } from "Services/barberService";
+import { fetchBarberBySalon } from "Services/barberService";
 import { fetchSalons } from "Services/SalonService";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -41,6 +41,7 @@ import printJS from "print-js";
 import Profile from "../../../../assets/images/users/avatar-8.jpg";
 import AppointmentConfirmationModal from "Components/Common/AppointmentStatusChange";
 import Loader from "Components/Common/Loader";
+import { Link } from "react-router-dom";
 
 let eventGuid = 0;
 // let todayStr = new Date().toISOString().replace(/T.*$/, ""); // YYYY-MM-DD of today
@@ -226,6 +227,7 @@ const CalenderScheduleInfo: React.FC = () => {
                 },
               ],
               haircutDetails: appointment.haircutDetails,
+              paymentDetails: appointment.paymentDetails
             },
           };
         });
@@ -414,6 +416,7 @@ const CalenderScheduleInfo: React.FC = () => {
       //   },
       // ],
       haircutDetails: event._def.extendedProps.haircutDetails,
+      paymentDetails: event._def.extendedProps.paymentDetails,
     });
     setSelectedStatus(event._def.extendedProps.status);
     setPreviousOption(event._def.extendedProps.status);
@@ -829,7 +832,33 @@ const CalenderScheduleInfo: React.FC = () => {
                   </div>
                 </div>
               </div>
-
+              <div>
+                <div className="flex-grow-1">
+                  <b>Payment:</b>
+                  <b
+                    className="px-2 py-1"
+                    style={{
+                      color: event?.paymentDetails?.paymentStatus?.toLowerCase() === 'success' ? 'green' : 'red',
+                    }}
+                  >
+                    {event?.paymentDetails?.paymentStatus ?? 'Pending'}
+                  </b>
+                  {
+                    event?.paymentDetails?.paymentStatus?.toLowerCase() === 'success' && (
+                      <Link
+                        to={event?.paymentDetails?.receiptUrl}
+                        target="_blank"
+                        className="btn btn-warning p-0 px-2"
+                        data-tooltip-id="download-tooltip"
+                        data-tooltip-content="Download Receipt"
+                        onClick={() => handlePrint()}
+                      >
+                        <i className="ri-download-line"></i> Receipt
+                      </Link>
+                    )
+                  }
+                </div>
+              </div>
               {/* Status Dropdown */}
               <div className="row my-4">
                 {/* Status Dropdown */}
