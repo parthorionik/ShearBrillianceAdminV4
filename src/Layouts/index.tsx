@@ -26,6 +26,8 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from 'reselect';
 import Loader from 'Components/Common/Loader';
+import { fetchPaymentConfig } from 'Services/ConfigurationService';
+import { toast, ToastContainer } from 'react-toastify';
 
 const Layout = (props: any) => {
     const [headerClass, setHeaderClass] = useState("");
@@ -33,6 +35,7 @@ const Layout = (props: any) => {
     const [userInfo, setUserInfo] = useState();
     const [salonUserInfo, setSalonUserInfo] = useState();
     const [showLoader, setShowLoader] = useState(false);
+    const [paymentMode, setpaymentMode] = useState();
 
     const dispatch: any = useDispatch();
 
@@ -125,6 +128,25 @@ const Layout = (props: any) => {
     useEffect(() => {
         window.addEventListener("scroll", scrollNavigation, true);
     });
+    useEffect(() => {
+        const fetchPaymentConfigData = async () => {
+            try {
+                const response: any = await fetchPaymentConfig();
+                setpaymentMode(response?.enableOnlinePayment);
+            } catch (error: any) {
+                // Check if the error has a response property (Axios errors usually have this)
+                if (error.response && error.response.data) {
+                    const apiMessage = error.response.data.message; // Extract the message from the response
+                    toast.error(apiMessage || "An error occurred"); // Show the error message in a toaster
+                } else {
+                    // Fallback for other types of errors
+                    toast.error(error.message || "Something went wrong");
+                }
+            }
+        };
+
+        fetchPaymentConfigData();
+    }, []);
 
     function scrollNavigation() {
         var scrollup = document.documentElement.scrollTop;
@@ -165,6 +187,7 @@ const Layout = (props: any) => {
                     storeRoleInfo={roleInfo}
                     userInfo={userInfo}
                     salonUserInfo={salonUserInfo}
+                    paymentMode={paymentMode}
                     onChangeLayoutMode={onChangeLayoutMode}
                     changeShowLoader={changeShowLoader} />
                 <Sidebar
@@ -181,6 +204,8 @@ const Layout = (props: any) => {
 
             </div>
             <RightSidebar />
+
+            <ToastContainer closeButton={false} limit={1} />
         </React.Fragment>
 
     );

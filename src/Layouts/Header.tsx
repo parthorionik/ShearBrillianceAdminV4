@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Dropdown,
@@ -6,6 +6,12 @@ import {
   DropdownToggle,
   Form,
   Button,
+  Input,
+  Label,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "reactstrap";
 
 //import images
@@ -25,11 +31,15 @@ import { createSelector } from "reselect";
 import { toast, ToastContainer } from "react-toastify"; // Import Toastify
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for Toastify
 import config from "config";
+import { updatePaymentConfig } from "Services/ConfigurationService";
 
 const { commonText } = config;
-const Header = ({ onChangeLayoutMode, layoutModeType, storeRoleInfo, headerClass, userInfo, salonUserInfo,changeShowLoader }: any) => {
+const Header = ({ onChangeLayoutMode, layoutModeType, storeRoleInfo, headerClass, userInfo, salonUserInfo, paymentMode, changeShowLoader }: any) => {
   const dispatch: any = useDispatch();
   const [isSalonOpen, setIsSalonOpen] = useState<boolean>(true);
+  const [isChecked, setIsChecked] = useState(paymentMode); // Initial state
+  const [showModal, setShowModal] = useState(false); // Modal visibility state 
+  const [nextState, setNextState] = useState(paymentMode); // Track next state for message
 
   // const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
@@ -167,14 +177,49 @@ const Header = ({ onChangeLayoutMode, layoutModeType, storeRoleInfo, headerClass
       }
     }
   };
+
+  const handleToggle = (event: any) => {
+    setNextState(!isChecked); // Store the next state
+    setShowModal(true); // Show the confirmation modal
+  };
+
+  const handleConfirm = async () => {
+    const obj = {
+      "enableOnlinePayment": nextState
+    }
+    try {
+      await updatePaymentConfig(obj);
+      toast.success("Payment mode updated successfully!");
+      setIsChecked(nextState); // Toggle the switch
+      setShowModal(false); // Close modal
+    } catch (error: any) {
+      // Check if the error has a response property (Axios errors usually have this)
+      if (error.response && error.response.data) {
+        const apiMessage = error.response.data.message; // Extract the message from the response
+        toast.error(apiMessage || "An error occurred"); // Show the error message in a toaster
+      } else {
+        // Fallback for other types of errors
+        toast.error(error.message || "Something went wrong");
+      }
+    };
+  }
+
+  const handleCancel = () => {
+    setShowModal(false); // Just close modal, no action
+  };
+
   useEffect(() => {
-    
+
     // Initialize the theme from localStorage if available
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme && savedTheme !== layoutModeType) {
       onChangeLayoutMode(savedTheme); // Update the theme in the parent component
     }
   }, [layoutModeType, onChangeLayoutMode]);
+
+  useEffect(() => {
+    setIsChecked(paymentMode);
+  }, [paymentMode]);
 
   return (
     <React.Fragment>
@@ -274,14 +319,23 @@ const Header = ({ onChangeLayoutMode, layoutModeType, storeRoleInfo, headerClass
                   </DropdownMenu>
                 </UncontrolledDropdown>
               </div> */}
-             {(storeRoleInfo?.role_name === 'Salon Owner' || storeRoleInfo?.role_name === 'Salon Manager') && (
-  <SalonStatusDropdown
-    isSalonOwner={isSalonOwner}
-    userInfo={userInfo}
-    salonUserInfo={salonUserInfo}
-    showLoader={changeShowLoader}
-  />
-)}
+              {(storeRoleInfo?.role_name === 'Admin') && (
+                <div className="form-check form-switch form-switch-secondary">
+                  <Input className="form-check-input" type="checkbox" role="switch" id="SwitchCheck2"
+                    checked={isChecked}
+                    onChange={handleToggle} // Trigger modal on change
+                  />
+                  <Label className="form-check-label" htmlFor="SwitchCheck2">Payment {isChecked ? "Online" : "Offline"}</Label>
+                </div>
+              )}
+              {(storeRoleInfo?.role_name === 'Salon Owner' || storeRoleInfo?.role_name === 'Salon Manager') && (
+                <SalonStatusDropdown
+                  isSalonOwner={isSalonOwner}
+                  userInfo={userInfo}
+                  salonUserInfo={salonUserInfo}
+                  showLoader={changeShowLoader}
+                />
+              )}
               <div>
                 {storeRoleInfo?.role_name === 'Barber' && (
                   <>
@@ -309,9 +363,9 @@ const Header = ({ onChangeLayoutMode, layoutModeType, storeRoleInfo, headerClass
 
               {/* Dark/Light Mode set */}
               <LightDark
-              layoutMode={layoutModeType}
-              onChangeLayoutMode={onChangeLayoutMode}
-            />
+                layoutMode={layoutModeType}
+                onChangeLayoutMode={onChangeLayoutMode}
+              />
               {/* NotificationDropdown */}
               <NotificationDropdown />
 
@@ -321,6 +375,23 @@ const Header = ({ onChangeLayoutMode, layoutModeType, storeRoleInfo, headerClass
           </div>
         </div>
       </header>
+
+      {/* Confirmation Modal */}
+      <Modal isOpen={showModal} toggle={handleCancel} centered backdrop="static">
+        <ModalHeader toggle={handleCancel}>Change Payment Mode</ModalHeader>
+        <ModalBody>
+          Are you sure you want to change the payment {isChecked ? "Online" : "Offline"} to{" "}
+          {isChecked ? "Offline" : "Online"}?
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button color="primary" onClick={handleConfirm}>
+            Confirm
+          </Button>
+        </ModalFooter>
+      </Modal>
     </React.Fragment>
   );
 };

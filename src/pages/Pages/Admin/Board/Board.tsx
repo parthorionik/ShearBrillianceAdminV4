@@ -1027,11 +1027,32 @@ const Board = () => {
         const sessionResponse = await getBarberSessionByBarber(obj);
         if (parseInt(sessionResponse) === 102) {
           setIsAppointmentAvailable(true);
-          let total;
-          if (services) {
-            total = services.reduce((sum: any, service: any) => sum + parseFloat(service.min_price), 0);
-          } else {
-            total = selectedOptions.reduce((sum: any, service: any) => sum + parseFloat(service.min_price), 0);
+          let total; 
+          if (selectedBarber) {
+            if (services) {
+              const totalPrice = services.reduce((acc: any, service: any) => {
+                const barberService = selectedBarber.servicesWithPrices.find(
+                  (serv: any) => serv.id === parseInt(service.value)
+                );
+
+                const price = barberService ? parseFloat(barberService?.barber_price) ?? parseFloat(barberService?.min_price) ?? 0 : parseFloat(service.min_price);
+
+                return acc + price;
+              }, 0);
+              total = totalPrice;
+            } else {
+              const totalPrice = selectedOptions.reduce((acc: any, service: any) => {
+                const barberService = selectedBarber.servicesWithPrices.find(
+                  (serv: any) => serv.id === parseInt(service.value)
+                );
+
+                const price = barberService ? parseFloat(barberService?.barber_price) ?? parseFloat(barberService?.min_price) ?? 0 : parseFloat(service.min_price);
+
+                return acc + price;
+              }, 0);
+              total = totalPrice;
+            }
+            // price = barberService.barber_price ? barberService.barber_price : barberService.min_price ? barberService.min_price : 0;
           }
           // const total = selectedOptions;
           setTotalPrice(total);
