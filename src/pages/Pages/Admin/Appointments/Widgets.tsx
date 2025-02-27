@@ -165,6 +165,70 @@ const Widgets = (props: any) => {
                     </CardBody>
                 </Card>
             </Col>
+            <Col xxl={4} sm={6}>
+                <Card className="card-animate">
+                    <CardBody>
+                        <div className="d-flex justify-content-between">
+                            <div>
+                                <p className="fw-medium text-muted mb-0">Total Offline Payment</p>
+                                <h2 className="mt-4 ff-secondary fw-semibold">
+                                    <span className="counter-value">
+                                        <CountUp
+                                            start={0}
+                                            end={props?.dashboard?.canceledAppointmentsCount}
+                                            // decimal={item.decimals}
+                                            suffix=""
+                                            duration={3}
+                                        />
+                                    </span>
+                                </h2>
+                                {/* <p className="mb-0 text-muted"><span className={"badge bg-light mb-0 text-" + item.badgeClass}>
+                                        <i className={"align-middle " + item.badge}></i> {item.percentage}
+                                    </span> vs. previous month</p> */}
+                            </div>
+                            <div>
+                                <div className="avatar-sm flex-shrink-0">
+                                    <span className={"avatar-title rounded-circle fs-4 bg-danger-subtle text-danger"}>
+                                        <i className="ri-delete-bin-line"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </CardBody>
+                </Card>
+            </Col>
+            <Col xxl={4} sm={6}>
+                <Card className="card-animate">
+                    <CardBody>
+                        <div className="d-flex justify-content-between">
+                            <div>
+                                <p className="fw-medium text-muted mb-0">Total Online Payment</p>
+                                <h2 className="mt-4 ff-secondary fw-semibold">
+                                    <span className="counter-value">
+                                        <CountUp
+                                            start={0}
+                                            end={props?.dashboard?.canceledAppointmentsCount}
+                                            // decimal={item.decimals}
+                                            suffix=""
+                                            duration={3}
+                                        />
+                                    </span>
+                                </h2>
+                                {/* <p className="mb-0 text-muted"><span className={"badge bg-light mb-0 text-" + item.badgeClass}>
+                                        <i className={"align-middle " + item.badge}></i> {item.percentage}
+                                    </span> vs. previous month</p> */}
+                            </div>
+                            <div>
+                                <div className="avatar-sm flex-shrink-0">
+                                    <span className={"avatar-title rounded-circle fs-4 bg-danger-subtle text-danger"}>
+                                        <i className="ri-delete-bin-line"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </CardBody>
+                </Card>
+            </Col>
             {/* {taskWidgets.map((item, key) => (
                 <Col xxl={3} sm={6} key={key}>
                     <Card className="card-animate">

@@ -255,7 +255,7 @@ const Widgets = (props: any) => {
               <div className="d-flex align-items-center">
                 <div className="flex-grow-1 overflow-hidden">
                   <p className="text-uppercase fw-medium text-muted text-truncate mb-0">
-                  Pending Walk In Appointments
+                    Pending Walk In Appointments
                   </p>
                 </div>
               </div>
@@ -369,7 +369,7 @@ const Widgets = (props: any) => {
           </CardBody>
         </Card>
       </Col>
-    
+
       <Col xl={3} md={6}>
         <Card className="card-animate">
           <CardBody>
@@ -454,50 +454,171 @@ const Widgets = (props: any) => {
       </Col>
       <Col xl={3} md={6}>
         <Card className="card-animate">
-                       <CardBody>
-                            <div className="d-block">
-                              <div className="d-flex align-items-center">
-                                <div className="flex-grow-1 overflow-hidden">
-                                  <p className="text-uppercase fw-medium text-muted text-truncate mb-0">
-                                    Top Services
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="d-block mt-3">
-                                {props?.dashboard?.topServicesWithDetails?.filter(
-                                  (service: any) => service.serviceisActive
-                                ).length > 0 ? (
-                                  props?.dashboard?.topServicesWithDetails
-                                    ?.filter((service: any) => service.serviceisActive)
-                                    .map((service: any) => (
-                                      <div
-                                        key={service.serviceId}
-                                        className="d-flex justify-content-between align-items-center py-2 border-bottom"
-                                      >
-                                        <span
-                                          className="fw-medium fs-14 text-truncate"
-                                          style={{ maxWidth: "70%" }}
-                                        >
-                                          {service.serviceName}
-                                        </span>
-                                        <span className="fw-semibold fs-14">
-                                          <CountUp
-                                            start={0}
-                                            end={formatCount(service.usageCount)}
-                                            suffix=""
-                                            duration={3}
-                                          />
-                                        </span>
-                                      </div>
-                                    ))
-                                ) : (
-                                  <span className="text-muted text-center w-100">
-                                    <i>No active services available!!!</i>
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </CardBody>
+          <CardBody>
+            <div className="d-block">
+              <div className="d-flex align-items-center">
+                <div className="flex-grow-1 overflow-hidden">
+                  <p className="text-uppercase fw-medium text-muted text-truncate mb-0">
+                    Total Payment
+                  </p>
+                </div>
+              </div>
+              <div className="d-flex justify-content-between align-items-end">
+                <div className="d-block mt-4">
+                  <h4 className="fs-22 fw-semibold ff-secondary mb-4">
+                    <span className="counter-value">
+                      <CountUp
+                        start={0}
+                        end={props?.dashboard?.revenue?.total?.toFixed(2)}
+                        decimals={2}
+                        // decimal={item.decimals}
+                        suffix=""
+                        duration={3}
+                      />
+                    </span>
+                  </h4>
+                </div>
+                <div className="avatar-sm flex-shrink-0">
+                  <span
+                    className={
+                      "avatar-title rounded-circle fs-4 bg-success-subtle text-success"
+                    }
+                  >
+                    <i className="ri-money-dollar-circle-line"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+      </Col>
+      <Col xl={3} md={6}>
+        <Card className="card-animate">
+          <CardBody>
+            <div className="d-block">
+              <div className="d-flex align-items-center">
+                <div className="flex-grow-1 overflow-hidden">
+                  <p className="text-uppercase fw-medium text-muted text-truncate mb-0">
+                    Total Offline Payment
+                  </p>
+                </div>
+              </div>
+              <div className="d-flex justify-content-between align-items-end">
+                <div className="d-block mt-4">
+                  <h4 className="fs-22 fw-semibold ff-secondary mb-4">
+                    <span className="counter-value">
+                      <CountUp
+                        start={0}
+                        end={props?.dashboard?.revenue?.offline?.toFixed(2)}
+                        decimals={2}
+                        // decimal={item.decimals}
+                        suffix=""
+                        duration={3}
+                      />
+                    </span>
+                  </h4>
+                </div>
+                <div className="avatar-sm flex-shrink-0">
+                  <span
+                    className={
+                      "avatar-title rounded-circle fs-4 bg-success-subtle text-success"
+                    }
+                  >
+                    <i className="ri-money-dollar-circle-line"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+      </Col>
+      <Col xl={3} md={6}>
+        <Card className="card-animate">
+          <CardBody>
+            <div className="d-block">
+              <div className="d-flex align-items-center">
+                <div className="flex-grow-1 overflow-hidden">
+                  <p className="text-uppercase fw-medium text-muted text-truncate mb-0">
+                    Total Online Payment
+                  </p>
+                </div>
+              </div>
+              <div className="d-flex justify-content-between align-items-end">
+                <div className="d-block mt-4">
+                  <h4 className="fs-22 fw-semibold ff-secondary mb-4">
+                    <span className="counter-value">
+                      <CountUp
+                        start={0}
+                        end={
+                          props?.dashboard?.revenue?.online?.toFixed(2)
+                        }
+                        decimals={2}
+                        suffix=""
+                        duration={3}
+                      />
+                    </span>
+                  </h4>
+                </div>
+                <div className="avatar-sm flex-shrink-0">
+                  <span
+                    className={
+                      "avatar-title rounded-circle fs-4 bg-success-subtle text-success"
+                    }
+                  >
+                    <i className="ri-money-dollar-circle-line"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+      </Col>
+      <Col xl={3} md={6}>
+        <Card className="card-animate">
+          <CardBody>
+            <div className="d-block">
+              <div className="d-flex align-items-center">
+                <div className="flex-grow-1 overflow-hidden">
+                  <p className="text-uppercase fw-medium text-muted text-truncate mb-0">
+                    Top Services
+                  </p>
+                </div>
+              </div>
+              <div className="d-block mt-3">
+                {props?.dashboard?.topServicesWithDetails?.filter(
+                  (service: any) => service.serviceisActive
+                ).length > 0 ? (
+                  props?.dashboard?.topServicesWithDetails
+                    ?.filter((service: any) => service.serviceisActive)
+                    .map((service: any) => (
+                      <div
+                        key={service.serviceId}
+                        className="d-flex justify-content-between align-items-center py-2 border-bottom"
+                      >
+                        <span
+                          className="fw-medium fs-14 text-truncate"
+                          style={{ maxWidth: "70%" }}
+                        >
+                          {service.serviceName}
+                        </span>
+                        <span className="fw-semibold fs-14">
+                          <CountUp
+                            start={0}
+                            end={formatCount(service.usageCount)}
+                            suffix=""
+                            duration={3}
+                          />
+                        </span>
+                      </div>
+                    ))
+                ) : (
+                  <span className="text-muted text-center w-100">
+                    <i>No active services available!!!</i>
+                  </span>
+                )}
+              </div>
+            </div>
+          </CardBody>
 
         </Card>
       </Col>
