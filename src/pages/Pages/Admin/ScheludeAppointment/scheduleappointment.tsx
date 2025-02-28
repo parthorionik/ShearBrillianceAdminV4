@@ -31,7 +31,7 @@ import { fetchBarberBySalon } from "Services/barberService";
 import { fetchTimeSlots } from "Services/AvailableTimeslot";
 import { createAppointment } from "Services/AppointmentService";
 import Loader from "Components/Common/Loader";
-import { addDays,isAfter, isBefore, isSameDay, parse } from "date-fns";
+import { addDays, isAfter, isBefore, isSameDay, parse } from "date-fns";
 import SelectBarberModal from "../../../../Components/Common/SelectedServiceModal"; // Import the modal
 import config from "config";
 
@@ -101,6 +101,11 @@ const Scheduleappointment = () => {
   const [timeSlots, setTimeSlots] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<any | null>(null);
+  const [tipPercentage, setTipPercentage] = useState(null);
+  const [customTip, setCustomTip] = useState('');
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [finalAmount, setFinalAmount] = useState(0);
+  const [tipAmount, setTipAmount] = useState(0);
 
   // Confirmation const
   const [dropdownOpen5, setDropdownOpen5] = useState<boolean>(false);
@@ -115,7 +120,25 @@ const Scheduleappointment = () => {
   function toggleArrowTab(tab: any) {
     if (activeArrowTab !== tab) {
       var modifiedSteps = [...passedarrowSteps, tab];
+      if (tab === 6) {
+        let total;
+        if (selectedBarber) {
+          const totalPrice = appointmentData.selectedServices.reduce((acc: any, service: any) => {
+            const barberService = selectedBarber.servicesWithPrices.find(
+              (serv: any) => serv.id === parseInt(service.serviceId)
+            );
 
+            const price = barberService ? parseFloat(barberService?.barber_price) ?? parseFloat(barberService?.min_price) ?? 0 : parseFloat(service.servicePrice);
+
+            return acc + price;
+          }, 0);
+          total = totalPrice;
+          // price = barberService.barber_price ? barberService.barber_price : barberService.min_price ? barberService.min_price : 0;
+        }
+        // const total = selectedOptions;
+        setTotalPrice(total);
+        calculateFinalAmount(total, tipPercentage, customTip);
+      }
       if (tab >= 1 && tab <= 7) {
         setactiveArrowTab(tab);
         setPassedarrowSteps(modifiedSteps);
@@ -284,6 +307,8 @@ const Scheduleappointment = () => {
           Array(service.currentCount).fill(service.serviceId)
       ), // Repeat `serviceId` based on `currentCount`
       slot_id: appointmentData.selectedSlotId,
+      payment_mode: "Pay_In_Person",
+      tip: tipAmount
     };
   };
   const handleSubmit = async () => {
@@ -297,6 +322,7 @@ const Scheduleappointment = () => {
       // Move to the next step
       toggleArrowTab(activeArrowTab + 1); // Increment the active tab to navigate to the next step
     } catch (error: any) {
+      setShowSpinner(false);
       // Check if the error has a response property (Axios errors usually have this)
       if (error.response && error.response.data) {
         const apiMessage = error.response.data.message; // Extract the message from the response
@@ -416,7 +442,6 @@ const Scheduleappointment = () => {
     if (isModalOpen) {
       setSelectBarber(null);
       setSelectedBarberId(null);
-      setSelectBarber(null);
       formData.selectedBarber = null;
     }
     toggleModal();
@@ -526,7 +551,8 @@ const Scheduleappointment = () => {
     serviceName: string,
     serviceId: number,
     currentCount: number,
-    serviceTime: number
+    serviceTime: number,
+    servicePrice: any
   ) => {
     setSelectedService((prevSelectedServices: any) => {
       const isAlreadySelected = prevSelectedServices.some(
@@ -539,7 +565,7 @@ const Scheduleappointment = () => {
           (service: any) => service.serviceId !== serviceId
         );
       } else {
-        handleServiceSelect(serviceId, serviceName, currentCount, serviceTime);
+        handleServiceSelect(serviceId, serviceName, currentCount, serviceTime, servicePrice);
         setServiceCounters((prevCounters: any) => ({
           ...prevCounters,
           [serviceId]: prevCounters[serviceId] || 1,
@@ -553,7 +579,8 @@ const Scheduleappointment = () => {
     serviceId: number,
     currentCount: number,
     serviceName: string,
-    serviceTime: number
+    serviceTime: number,
+    servicePrice: any
   ) => {
     if (currentCount > 0) {
       setServiceCounters((prev: any) => ({
@@ -570,6 +597,7 @@ const Scheduleappointment = () => {
                 ...service,
                 currentCount, // Update the currentCount in the service
                 totalServiceTime: currentCount * serviceTime, // Update the totalServiceTime
+                servicePrice
               };
             }
             return service;
@@ -590,7 +618,7 @@ const Scheduleappointment = () => {
       });
     } else {
       // If count is 0 or less, remove the service
-      handleCardClickservices("", serviceId, currentCount, serviceTime);
+      handleCardClickservices("", serviceId, currentCount, serviceTime, servicePrice);
     }
   };
 
@@ -602,12 +630,40 @@ const Scheduleappointment = () => {
       }));
     }
   };
+  const handleTipChange = (e: any) => {
+    const appointm = appointmentData;
+    const appointmd = selectedBarber;
+    const value = e.target.value;
+    setTipPercentage(value);
+    if (value !== 'custom') {   
+      setCustomTip('');
+      calculateFinalAmount(totalPrice, value, '');
+    }
+  };
+
+  const handleCustomTipChange = (e: any) => {
+    const value = e.target.value;
+    setCustomTip(value);
+    calculateFinalAmount(totalPrice, 'custom', value);
+  };
+
+  const calculateFinalAmount = (total: any, tip: any, custom: any) => {
+    if (!tip || tip === null) {
+      setFinalAmount(total); // No tip, just use total
+      return;
+    }
+
+    let tipAmount = tip === 'custom' ? parseFloat(custom || 0) : (total * parseFloat(tip)) / 100;
+    setTipAmount(tipAmount);
+    setFinalAmount(total + tipAmount);
+  };
 
   const handleServiceSelect = (
     serviceId: number,
     serviceName: string,
     currentCount: number,
-    serviceTime: number
+    serviceTime: number,
+    servicePrice: any
   ) => {
     const totalServiceTime = currentCount * serviceTime;
 
@@ -644,6 +700,7 @@ const Scheduleappointment = () => {
             currentCount,
             serviceTime,
             totalServiceTime,
+            servicePrice
           },
         ];
 
@@ -833,11 +890,11 @@ const Scheduleappointment = () => {
     return false; // Do not disable for non-today dates
   };
 
-    const preventSpaceKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === " ") {
-        event.preventDefault();
-      }
-    };
+  const preventSpaceKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === " ") {
+      event.preventDefault();
+    }
+  };
 
   // Handle slot selection
   const handleSlotSelection = (slot: any) => {
@@ -991,7 +1048,15 @@ const Scheduleappointment = () => {
 
     return date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
   }
-  document.title = `${ commonText.PROJECT_NAME }- Admin & Dashboard Template`;
+
+  const timeSlot = (slot: any) => {
+    if (Array.isArray(slot)) {
+      return slot.map((time) => formatTime(time)).join(" • ");
+    }
+    return slot ? formatTime(slot) : "";
+  };
+   
+  document.title = `${commonText.PROJECT_NAME}- Admin & Dashboard Template`;
   return (
     <React.Fragment>
       <Container fluid>
@@ -1142,7 +1207,7 @@ const Scheduleappointment = () => {
                     {showLoader && <Loader />}
                     {/* Select Salon 1 */}
                     <TabPane id="steparrow-description-info" tabId={1}>
-                    <div className="d-flex align-items-start gap-3 mt-4">
+                      <div className="d-flex align-items-start gap-3 mt-4">
                         <button
                           type="button"
                           className="btn btn-success btn-label right ms-auto nexttab nexttab"
@@ -1245,8 +1310,8 @@ const Scheduleappointment = () => {
 
                     {/* Select Services 2 */}
                     <TabPane id="steparrow-description-info" tabId={2}>
-                      
-                    <div className="d-flex align-items-start gap-3 mt-4">
+
+                      <div className="d-flex align-items-start gap-3 mt-4">
                         <button
                           type="button"
                           className="btn btn-light btn-label previestab"
@@ -1300,7 +1365,8 @@ const Scheduleappointment = () => {
                                           service.name,
                                           service.id,
                                           currentCount,
-                                          service.default_service_time
+                                          service.default_service_time,
+                                          service.min_price
                                         );
                                       }}
                                     >
@@ -1330,7 +1396,8 @@ const Scheduleappointment = () => {
                                                     service.id,
                                                     newCount,
                                                     service.name,
-                                                    service.default_service_time
+                                                    service.default_service_time,
+                                                    service.min_price
                                                   );
                                                 }}
                                               >
@@ -1360,7 +1427,8 @@ const Scheduleappointment = () => {
                                                       service.id,
                                                       service.name,
                                                       newCount,
-                                                      service.default_service_time
+                                                      service.default_service_time,
+                                                      service.min_price
                                                     );
                                                   } else {
                                                     toast.warn(
@@ -1391,7 +1459,7 @@ const Scheduleappointment = () => {
 
                     {/* Select Barber */}
                     <TabPane id="steparrow-description-info" tabId={3}>
-                    <div className="d-flex align-items-start gap-3 mt-4">
+                      <div className="d-flex align-items-start gap-3 mt-4">
                         <button
                           type="button"
                           className="btn btn-light btn-label previestab"
@@ -1518,7 +1586,7 @@ const Scheduleappointment = () => {
 
                     {/* Date & Time */}
                     <TabPane id="steparrow-description-info" tabId={4}>
-                    <div className="d-flex align-items-start gap-3 mt-4">
+                      <div className="d-flex align-items-start gap-3 mt-4">
                         <button
                           type="button"
                           className="btn btn-light btn-label previestab"
@@ -1683,7 +1751,7 @@ const Scheduleappointment = () => {
 
                     {/* Confirmation Page */}
                     <TabPane id="steparrow-gen-info" tabId={5}>
-                    <div className="d-flex align-items-start gap-3 mt-4">
+                      <div className="d-flex align-items-start gap-3 mt-4">
                         <button
                           type="button"
                           className="btn btn-light btn-label previestab"
@@ -1824,7 +1892,7 @@ const Scheduleappointment = () => {
 
                     {/* Appointment Details */}
                     <TabPane id="steparrow-description-info" tabId={6}>
-                    <div className="d-flex align-items-start gap-3 mt-4">
+                      <div className="d-flex align-items-start gap-3 mt-4">
                         <button
                           type="button"
                           className="btn btn-light btn-label previestab"
@@ -1855,98 +1923,151 @@ const Scheduleappointment = () => {
                           <h5 className="card-title">Appointment Details</h5>
                         </CardHeader>
                         <CardBody>
-                          <Row className="mb-3">
-                            <Col sm={4}>
-                              <strong>Selected Salon:</strong>
-                            </Col>
+                          <Row>
                             <Col sm={8}>
-                              {appointmentData?.selectedSalonName}
+                              <Row className="mb-3">
+                                <Col sm={4}>
+                                  <strong>Selected Salon:</strong>
+                                </Col>
+                                <Col sm={8}>
+                                  {appointmentData?.selectedSalonName}
+                                </Col>
+                              </Row>
+                              <Row className="mb-3">
+                                <Col sm={4}>
+                                  <strong>Selected Services:</strong>
+                                </Col>
+                                <Col sm={8}>
+                                  {appointmentData?.selectedServices?.map(
+                                    (service: any, index: any) => (
+                                      <div
+                                        key={index}
+                                        className="d-flex align-items-center mb-2"
+                                      >
+                                        <i className="ri-scissors-line  fs-5 me-2"></i>
+                                        <div className="text-start">
+                                          <span>{service.serviceName}</span>, &nbsp;
+                                          <i className="ri-user-3-line  fs-5 me-1"></i>
+                                          <span>{service.currentCount}</span> &nbsp;
+                                          &nbsp;
+                                          <i className="ri-time-line fs-5 me-1"></i>
+                                          <span>
+                                            {service.totalServiceTime} mins
+                                          </span>
+                                        </div>
+                                      </div>
+                                    )
+                                  )}
+                                </Col>
+                              </Row>
+                              <Row className="mb-3">
+                                <Col sm={4}>
+                                  <strong className="justify-start">
+                                    Selected Barber:
+                                  </strong>
+                                </Col>
+                                <Col sm={8}>
+                                  <i
+                                    className="user ri-user-3-line"
+                                    style={{
+                                      marginRight: "3px",
+                                      color: "grey",
+                                      fontSize: "20px",
+                                    }}
+                                  ></i>
+                                  {appointmentData?.selectBarbername}
+                                </Col>
+                              </Row>
+                              <Row className="mb-3">
+                                <Col sm={4}>
+                                  <strong>Selected Date:</strong>
+                                </Col>
+                                <Col sm={8}>{appointmentData?.selectedDate}</Col>
+                              </Row>
+                              <Row className="mb-3">
+                                <Col sm={4}>
+                                  <strong>Selected Time :</strong>
+                                </Col>
+                                <Col sm={8}>
+                                  {timeSlot(appointmentData?.selectedSlot)}
+                                </Col>
+                              </Row>
+                              <Row className="mb-3">
+                                <Col sm={4}>
+                                  <strong>First Name:</strong>
+                                </Col>
+                                <Col sm={8}>{appointmentData?.firstName}</Col>
+                              </Row>
+                              <Row className="mb-3">
+                                <Col sm={4}>
+                                  <strong>Last Name:</strong>
+                                </Col>
+                                <Col sm={8}>{appointmentData?.lastName}</Col>
+                              </Row>
+                              <Row className="mb-3">
+                                <Col sm={4}>
+                                  <strong>Email ID:</strong>
+                                </Col>
+                                <Col sm={8}>{appointmentData?.email}</Col>
+                              </Row>
+                              <Row className="mb-3">
+                                <Col sm={4}>
+                                  <strong>Mobile Number:</strong>
+                                </Col>
+                                <Col sm={8}>{appointmentData?.mobileNumber}</Col>
+                              </Row>
                             </Col>
-                          </Row>
-                          <Row className="mb-3">
                             <Col sm={4}>
-                              <strong>Selected Services:</strong>
-                            </Col>
-                            <Col sm={8}>
-                              {appointmentData?.selectedServices?.map(
-                                (service: any, index: any) => (
-                                  <div
-                                    key={index}
-                                    className="d-flex align-items-center mb-2"
-                                  >
-                                    <i className="ri-scissors-line  fs-5 me-2"></i>
-                                    <div className="text-start">
-                                      <span>{service.serviceName}</span>, &nbsp;
-                                      <i className="ri-user-3-line  fs-5 me-1"></i>
-                                      <span>{service.currentCount}</span> &nbsp;
-                                      &nbsp;
-                                      <i className="ri-time-line fs-5 me-1"></i>
-                                      <span>
-                                        {service.totalServiceTime} mins
-                                      </span>
-                                    </div>
+                              <Row>
+                                <Col lg={12}>
+                                  <Label className="form-label me-2">Tip</Label>
+                                  <div className="btn-group">
+                                    {[2, 5, 10].map((percentage) => (
+                                      <Label
+                                        key={percentage}
+                                        className={`btn btn-outline-primary ${tipPercentage == percentage ? 'active' : ''}`}
+                                      >
+                                        <Input
+                                          type="radio"
+                                          name="tip"
+                                          value={percentage}
+                                          checked={tipPercentage == percentage}
+                                          onChange={handleTipChange}
+                                          className="d-none"
+                                        />
+                                        {percentage}%
+                                      </Label>
+                                    ))}
+                                    <Label className={`btn btn-outline-primary ${tipPercentage === 'custom' ? 'active' : ''}`}>
+                                      <Input
+                                        type="radio"
+                                        name="tip"
+                                        value="custom"
+                                        checked={tipPercentage === 'custom'}
+                                        onChange={handleTipChange}
+                                        className="d-none"
+                                      />
+                                      Custom
+                                    </Label>
                                   </div>
-                                )
-                              )}
+
+                                  {tipPercentage === 'custom' && (
+                                    <Input
+                                      type="number"
+                                      placeholder="Enter custom tip"
+                                      value={customTip}
+                                      onChange={handleCustomTipChange}
+                                      className="mt-2"
+                                    />
+                                  )}
+                                </Col>
+
+                                <Col lg={12} className="d-flex justify-content-between align-item-center mt-2">
+                                  <h5>Total: ${totalPrice.toFixed(2)}</h5>
+                                  <h5>Final Amount: ${finalAmount.toFixed(2)}</h5>
+                                </Col>
+                              </Row>
                             </Col>
-                          </Row>
-                          <Row className="mb-3">
-                            <Col sm={4}>
-                              <strong className="justify-start">
-                                Selected Barber:
-                              </strong>
-                            </Col>
-                            <Col sm={8}>
-                              <i
-                                className="user ri-user-3-line"
-                                style={{
-                                  marginRight: "3px",
-                                  color: "grey",
-                                  fontSize: "20px",
-                                }}
-                              ></i>
-                              {appointmentData?.selectBarbername}
-                            </Col>
-                          </Row>
-                          <Row className="mb-3">
-                            <Col sm={4}>
-                              <strong>Selected Date:</strong>
-                            </Col>
-                            <Col sm={8}>{appointmentData?.selectedDate}</Col>
-                          </Row>
-                          <Row className="mb-3">
-                            <Col sm={4}>
-                              <strong>Selected Time :</strong>
-                            </Col>
-                            <Col sm={8}>
-                              {Array.isArray(appointmentData?.selectedSlot)
-                                ? appointmentData.selectedSlot.join(" • ") // Join slots with dots
-                                : appointmentData?.selectedSlot}
-                            </Col>
-                          </Row>
-                          <Row className="mb-3">
-                            <Col sm={4}>
-                              <strong>First Name:</strong>
-                            </Col>
-                            <Col sm={8}>{appointmentData?.firstName}</Col>
-                          </Row>
-                          <Row className="mb-3">
-                            <Col sm={4}>
-                              <strong>Last Name:</strong>
-                            </Col>
-                            <Col sm={8}>{appointmentData?.lastName}</Col>
-                          </Row>
-                          <Row className="mb-3">
-                            <Col sm={4}>
-                              <strong>Email ID:</strong>
-                            </Col>
-                            <Col sm={8}>{appointmentData?.email}</Col>
-                          </Row>
-                          <Row className="mb-3">
-                            <Col sm={4}>
-                              <strong>Mobile Number:</strong>
-                            </Col>
-                            <Col sm={8}>{appointmentData?.mobileNumber}</Col>
                           </Row>
                         </CardBody>
                       </Card>

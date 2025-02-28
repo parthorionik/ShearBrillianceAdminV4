@@ -249,7 +249,9 @@ const Board = () => {
                 : status === "canceled"
                   ? curr.cancel_time
                   : curr.in_salon_time,
-          paymentDetails: curr.paymentDetails
+          paymentDetails: curr.paymentDetails,
+          paymentStatus: curr.paymentStatus,
+          paymentMode: curr.paymentMode
         };
         acc[status].cards.push(obj);
         acc[status].badge = acc[status].cards?.length; // Update count
@@ -2203,13 +2205,13 @@ const Board = () => {
                                               <b
                                                 className="px-2 py-1"
                                                 style={{
-                                                  color: card.paymentDetails?.paymentStatus?.toLowerCase() === 'success' ? 'green' : 'red',
+                                                  color: card?.paymentStatus?.toLowerCase() === 'success' ? 'green' : 'red',
                                                 }}
                                               >
-                                                {card.paymentDetails?.paymentStatus ?? 'Pending'}
+                                                {card?.paymentStatus ?? 'Pending'}
                                               </b>
                                               {
-                                                card.paymentDetails?.paymentStatus?.toLowerCase() === 'success' && (
+                                                card?.paymentStatus?.toLowerCase() === 'success' && card?.paymentMode !== "Pay_In_Person" && (
                                                   <Link
                                                     to={card.paymentDetails?.receiptUrl}
                                                     target="_blank"

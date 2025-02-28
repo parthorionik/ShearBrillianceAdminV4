@@ -227,7 +227,9 @@ const CalenderScheduleInfo: React.FC = () => {
                 },
               ],
               haircutDetails: appointment.haircutDetails,
-              paymentDetails: appointment.paymentDetails
+              paymentDetails: appointment.paymentDetails,
+              paymentStatus: appointment.paymentStatus,
+              paymentMode: appointment.paymentMode
             },
           };
         });
@@ -417,6 +419,8 @@ const CalenderScheduleInfo: React.FC = () => {
       // ],
       haircutDetails: event._def.extendedProps.haircutDetails,
       paymentDetails: event._def.extendedProps.paymentDetails,
+      paymentStatus: event._def.extendedProps.paymentStatus,
+      paymentMode: event._def.extendedProps.paymentMode,
     });
     setSelectedStatus(event._def.extendedProps.status);
     setPreviousOption(event._def.extendedProps.status);
@@ -838,13 +842,13 @@ const CalenderScheduleInfo: React.FC = () => {
                   <b
                     className="px-2 py-1"
                     style={{
-                      color: event?.paymentDetails?.paymentStatus?.toLowerCase() === 'success' ? 'green' : 'red',
+                      color: event?.paymentStatus?.toLowerCase() === 'success' ? 'green' : 'red',
                     }}
                   >
-                    {event?.paymentDetails?.paymentStatus ?? 'Pending'}
+                    {event?.paymentStatus ?? 'Pending'}
                   </b>
                   {
-                    event?.paymentDetails?.paymentStatus?.toLowerCase() === 'success' && (
+                    event?.paymentStatus?.toLowerCase() === 'success' && event?.paymentMode !== "Pay_In_Person" && (
                       <Link
                         to={event?.paymentDetails?.receiptUrl}
                         target="_blank"
