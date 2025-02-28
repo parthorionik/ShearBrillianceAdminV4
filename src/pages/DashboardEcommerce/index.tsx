@@ -7,6 +7,7 @@ import Loader from "Components/Common/Loader";
 import ProjectsStatus from "./ProjectsStatus";
 import { toast, ToastContainer } from "react-toastify";
 import config from "config";
+import RevenueStatus from "./RevenueStatus";
 
 export const DASHBOARD_ENDPOINT = "/dashboard";
 const { commonText } = config;
@@ -61,6 +62,7 @@ const DashboardEcommerce = () => {
           </Row>
         <div style={{display:"flex",gap:"10px"}}>
           <ProjectsStatus />
+          <RevenueStatus />
         </div>
           
         </Container>

@@ -91,7 +91,7 @@ const authProtectedRoutes = [
   { path: "/transfer-barber", component: <SalonTransferBarber />, allowedRoles: ["Admin", "Salon Manager"] },
   { path: "/leave-desk", component: <RequestedLeavesTable />, allowedRoles: ['Salon Manager'] },
 
-  { path: "/sales-revenue", component: < Salesrevenueindex />, allowedRoles: ["Admin", "Salon Manager"] },
+  { path: "/sales-revenue", component: <Salesrevenueindex />, allowedRoles: ["Admin", "Salon Manager"] },
 
   { path: "/schedule-appointment", component: <Salonscheduleappointment />, allowedRoles: ["Admin", 'Salon Owner', 'Salon Manager'] },
   { path: "/calender-schedule", component: <CalenderScheduleInfo />, allowedRoles: ["Admin", 'Salon Owner', 'Appointment_Barber', 'Salon Manager'] },

@@ -21,6 +21,18 @@ export const generatereport = async (startDate: any, endDate: any): Promise<any>
     }
 };
 
+// Fetch the list of all appointments
+export const generateSalesreport = async (startDate: any, endDate: any): Promise<any> => {
+    try {
+        const response = await axios.get(`${url.GenerateSalesReport}?startDate=` + startDate + `&endDate=` + endDate);
+        console.log("Fetched sales report:", response);
+        return response;
+    } catch (error) {
+        console.error("Error fetching report:", error);
+        throw error;
+    }
+};
+
 // Generate Report
 // export const Generatereport =  (selectedStartDate:any , selectedEndDate:any ) => api.get(`${url.Generatereport}?startDate=${selectedStartDate.toISOString()}&endDate=${selectedEndDate.toISOString()}`);
 

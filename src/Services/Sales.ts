@@ -2,7 +2,7 @@ import { APIClient } from "./api_helper";
 
 const apiClient = new APIClient();
 const SALES_ENDPOINT = "Sales";
-const CHECKINREVENUE_ENDPOINT = "Sales";
+const CHECKINREVENUE_ENDPOINT = "Sales"; 
 
 
 // Fetch top services data
@@ -33,6 +33,18 @@ export const fetchWalkInSalesData = async (filter: string): Promise<any> => {
   
   try {
     const response = await apiClient.get(`${CHECKINREVENUE_ENDPOINT}/getWalkInSalesData?filter=${filter}`);
+    return response; // Return data assuming it's in `response.data`
+  } catch (error) {
+    console.error(`Error fetching sales data for filter: ${filter}`, error);
+    throw error;
+  }
+};
+
+
+export const fetchSalesPaymentData = async (filter: string): Promise<any> => {
+  
+  try {
+    const response = await apiClient.get(`${CHECKINREVENUE_ENDPOINT}/payment?filter=${filter}`);
     return response; // Return data assuming it's in `response.data`
   } catch (error) {
     console.error(`Error fetching sales data for filter: ${filter}`, error);

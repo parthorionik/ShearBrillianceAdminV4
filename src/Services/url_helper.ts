@@ -38,6 +38,7 @@ export const userForgetPassword = '/users/send-reset-email';
 export const Insalonappointment = '/appointments/board/insalonUsers';
 
 export const Generatereport = '/dashboard/generate-report';
+export const GenerateSalesReport = '/sales/report';
 
 export const BARBER_LEAVE_REQUEST = '/barber-leave/create'
 
@@ -47,6 +48,7 @@ export const REQUESTED_LEAVES_ENDPOINT ='/barber-leave/all'
 export const SALESREVENUE_ENDPOINT ='/sales/getSalesData'
 
 export const CHECKINREVENUE_ENDPOINT ='/sales/getSalesData'
+export const SALES_PAYMENT_ENDPOINT ='/sales/payment'
 
 export const TIMESLOT_ENDPOINT = '/slots/available'
 
