@@ -108,8 +108,8 @@ const getBalanceChartsData = (filter: string) => async (dispatch: any) => {
     if (salesData && Array.isArray(salesData)) {
       console.log('Sales data fetched successfully:', salesData);
 
-      const totalSales = salesData.reduce((sum, item) => sum + parseFloat(item.revenue), 0);
-      const totalAppointments = salesData.reduce((sum, item) => sum + item.appointments, 0);
+      const totalSales = salesData.reduce((sum, item) => sum + parseFloat(item.revenue || 0), 0);
+      const totalAppointments = salesData.reduce((sum, item) => sum + Number(item.appointments || 0), 0);
       const profitRatio = totalAppointments ? (totalSales / totalAppointments) * 100 : 0;
       dispatch(updateBalanceOverviewData([...salesData]));
       dispatch(updateMetrics({ sales: totalSales, appointments: totalAppointments, profitRatio }));

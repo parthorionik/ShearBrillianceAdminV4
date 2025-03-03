@@ -109,8 +109,9 @@ const getBalanceChartsData = (filter: string) => async (dispatch: any) => {
       console.log('Sales data fetched successfully:', salesData);
 
       const totalSales = salesData.reduce((sum, item) => sum + parseFloat(item.revenue), 0);
-      const totalAppointments = salesData.reduce((sum, item) => sum + item.appointments, 0);
+      const totalAppointments = salesData.reduce((sum, item) => sum + Number(item.appointments || 0), 0);
       const profitRatio = totalAppointments ? (totalSales / totalAppointments) * 100 : 0;
+
       dispatch(updateBalanceOverviewData([...salesData]));
       dispatch(updateMetrics({ sales: totalSales, appointments: totalAppointments, profitRatio }));
     } else {
@@ -224,19 +225,19 @@ const BalanceOverview = () => {
               <ul className="list-inline main-chart text-center mb-0">
                 <li className="list-inline-item chart-border-left me-0 border-0">
                   <h4 className="text-primary">
-                    ${sales.toLocaleString()}
+                    ${sales?.toLocaleString()}
                     <span className="text-muted d-inline-block fs-13 align-middle ms-2">Sales</span>
                   </h4>
                 </li>
                 <li className="list-inline-item chart-border-left me-0">
                   <h4>
-                    {appointments.toLocaleString()}
+                    {appointments?.toLocaleString()}
                     <span className="text-muted d-inline-block fs-13 align-middle ms-2">Appointments</span>
                   </h4>
                 </li>
                 <li className="list-inline-item chart-border-left me-0">
                   <h4>
-                    {profitRatio.toFixed(2)}%
+                    {profitRatio?.toFixed(2)}%
                     <span className="text-muted d-inline-block fs-13 align-middle ms-2">Profit Ratio</span>
                   </h4>
                 </li>
