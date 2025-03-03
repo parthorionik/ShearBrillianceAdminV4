@@ -122,7 +122,7 @@ const ProjectsStatus: React.FC = () => {
 
                                     {[
                                         { color: "success", label: "Completed", count: chartData[0] },
-                                        { color: "danger", label: "Cancelled", count: chartData[2] },
+                                        { color: "danger", label: "Cancelled", count: chartData[1] },
                                     ].map((item, index) => (
                                         <div
                                             key={index}
