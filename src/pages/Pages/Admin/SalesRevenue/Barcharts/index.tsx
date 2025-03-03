@@ -6,7 +6,7 @@ import { Basic} from "./BarCharts";
 const BarCharts = () => {
     return (
         <React.Fragment>
-            <div className="page-content" style={{padding:'0'}}>            
+            <div className="page-content" style={{padding:'0', width: '100%'}}>            
                 <Container fluid>
                     <Row>
                         <Col lg={6}>

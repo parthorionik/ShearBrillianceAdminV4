@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import { PrjectsStatusCharts } from './DashboardProjectCharts';
-import { fetchAppointmentStatus } from 'Services/DashboardService';
+import { fetchPaymentMethod } from 'Services/Sales';
 import { toast, ToastContainer } from 'react-toastify';
 
-interface AppointmentStatus {
+interface PaymentMethod {
     status: string;
     count: string;
 }
 
-const ProjectsStatus: React.FC = () => {
+const PaymentChart: React.FC = () => {
     const [chartData, setChartData] = useState<number[]>([0, 0]); // Completed, Cancelled
     const [selectedFilter, setSelectedFilter] = useState<string>("Last 7 Days");
     const [loading, setLoading] = useState<boolean>(false);
 
     // Function to map API response to chartData
-    const mapApiResponseToChartData = (response: AppointmentStatus[]): number[] => {
+    const mapApiResponseToChartData = (response: PaymentMethod[]): number[] => {
         const mappedData = [0, 0]; // Default values for [completed, cancelled]
-        response.forEach((item: AppointmentStatus) => {
-            if (item.status === "completed") mappedData[0] = parseInt(item.count, 10);
+        response.forEach((item: PaymentMethod) => {
+            if (item.status === "Online Payment") mappedData[0] = parseInt(item.count, 10);
             // else if (item.status === "checked_in" || item.status === "yet_to_start") mappedData[1] += parseInt(item.count, 10);
-            else if (item.status === "canceled") mappedData[1] = parseInt(item.count, 10);
+            else if (item.status === "Offline Payment") mappedData[1] = parseInt(item.count, 10);
         });
         return mappedData;
     };
@@ -28,21 +28,19 @@ const ProjectsStatus: React.FC = () => {
     const fetchData = async (filter: string): Promise<void> => {
         setLoading(true);
         try {
-            const response = await fetchAppointmentStatus(filter);
-            if (response?.response) {
-                const data = response.response.filter((stats: any) => stats.status?.toLowerCase() === 'completed' || stats.status?.toLowerCase() === 'canceled')
-                const chartData = mapApiResponseToChartData(data);
+            const response = await fetchPaymentMethod(filter);
+    
+            if (response) { // Ensure response.data exists
+                const { online, offline } = response; // Extract values
+                const chartData = [online, offline]; // Convert to array for chart
                 setChartData(chartData);
             } else {
                 setChartData([0, 0]); // Default to zero if no response
             }
         } catch (error: any) {
-            // Check if the error has a response property (Axios errors usually have this)
-            if (error.response && error.response.data) {
-                const apiMessage = error.response.data.message; // Extract the message from the response
-                toast.error(apiMessage || "An error occurred"); // Show the error message in a toaster
+            if (error.response?.data?.message) {
+                toast.error(error.response.data.message);
             } else {
-                // Fallback for other types of errors
                 toast.error(error.message || "Something went wrong");
             }
             setChartData([0, 0]); // Handle error by resetting data
@@ -50,6 +48,7 @@ const ProjectsStatus: React.FC = () => {
             setLoading(false);
         }
     };
+    
 
     const onChangeChartPeriod = (filter: string): void => {
         const filterMapping: { [key: string]: string } = {
@@ -70,7 +69,7 @@ const ProjectsStatus: React.FC = () => {
             <Col xxl={4} lg={6}>
                 <Card className="card-height-100">
                     <CardHeader className="align-items-center d-flex">
-                        <h4 className="card-title mb-0 flex-grow-1">Appointment Status</h4>
+                        <h4 className="card-title mb-0 flex-grow-1">Payment Status</h4>
                         <div className="flex-shrink-0">
                             <UncontrolledDropdown className="card-header-dropdown">
                                 <DropdownToggle tag="a" className="dropdown-btn text-muted" role="button">
@@ -116,13 +115,13 @@ const ProjectsStatus: React.FC = () => {
                                             {chartData.reduce((total, num) => total + num, 0)}
                                         </h2>
                                         <div>
-                                            <p className="text-muted mb-0">Total Appointments</p>
+                                            <p className="text-muted mb-0">Total Payment</p>
                                         </div>
                                     </div>
 
                                     {[
-                                        { color: "success", label: "Completed", count: chartData[0] },
-                                        { color: "danger", label: "Cancelled", count: chartData[2] },
+                                        { color: "success", label: "Online Payment", count: chartData[0] },
+                                        { color: "warning", label: "Offline Payment", count: chartData[1] },
                                     ].map((item, index) => (
                                         <div
                                             key={index}
@@ -133,7 +132,7 @@ const ProjectsStatus: React.FC = () => {
                                                 {item.label}
                                             </p>
                                             <div>
-                                                <span className="text-muted pe-5">{item.count} Appointments</span>
+                                                <span className="text-muted pe-5">{item.count} Payment</span>
                                             </div>
                                         </div>
                                     ))}
@@ -149,4 +148,4 @@ const ProjectsStatus: React.FC = () => {
     );
 };
 
-export default ProjectsStatus;
+export default PaymentChart;
