@@ -151,26 +151,33 @@ const CheckinOverview = () => {
   );
 
   useEffect(() => {
-    setChartData(JSON.parse(JSON.stringify(balanceOverviewData)));
+    if(balanceOverviewData && balanceOverviewData?.length > 0) {
+      setChartData(JSON.parse(JSON.stringify(balanceOverviewData)));
+    }
   }, [balanceOverviewData]);
 
   const transformChartData = (data: SalesDataItem[]) => {
-    const revenueData = data.map(item => item.revenue);
-    const appointmentsData = data.map(item => item.appointments);
-    const categories = data.map(item => item.date); // Extracting dates for the x-axis
-
+    if (!data || !Array.isArray(data)) {
+      console.error("Invalid chart data format", data);
+      return { series: [], categories: [] };
+    }
+  
+    const revenueData = data.map(item => (isNaN(Number(item.revenue)) ? 0 : Number(item.revenue)));
+    const appointmentsData = data.map(item => (isNaN(Number(item.appointments)) ? 0 : Number(item.appointments)));
+    const categories = data.map(item => item.date || "Unknown");
+  
     return {
       series: [
         {
-          name: 'Revenue',
-          data: revenueData,
+          name: "Revenue",
+          data: revenueData, // Must be number[]
         },
         {
-          name: 'Appointments',
-          data: appointmentsData,
+          name: "Walkin",
+          data: appointmentsData, // Must be number[]
         },
       ],
-      categories, // Pass categories for the x-axis
+      categories,
     };
   };
 
@@ -224,35 +231,37 @@ const CheckinOverview = () => {
               <ul className="list-inline main-chart text-center mb-0">
                 <li className="list-inline-item chart-border-left me-0 border-0">
                   <h4 className="text-primary">
-                    ${sales.toLocaleString()}
+                    ${sales?.toLocaleString()}
                     <span className="text-muted d-inline-block fs-13 align-middle ms-2">Sales</span>
                   </h4>
                 </li>
                 <li className="list-inline-item chart-border-left me-0">
                   <h4>
-                    {appointments.toLocaleString()}
+                    {appointments?.toLocaleString()}
                     <span className="text-muted d-inline-block fs-13 align-middle ms-2">Appointments</span>
                   </h4>
                 </li>
                 <li className="list-inline-item chart-border-left me-0">
                   <h4>
-                    {profitRatio.toFixed(2)}%
+                    {profitRatio?.toFixed(2)}%
                     <span className="text-muted d-inline-block fs-13 align-middle ms-2">Profit Ratio</span>
                   </h4>
                 </li>
               </ul>
               <div dir="ltr">
-                <BalanceOverviewCharts
-                  series={transformChartData(chartData).series} // Passing transformed series data
-                  categories={transformChartData(chartData).categories} // Passing categories for the x-axis
-                  chartId="revenue-expenses-charts"
-                />
+                {transformChartData(chartData).series && transformChartData(chartData).series?.length > 0 && (
+                  <BalanceOverviewCharts
+                    series={transformChartData(chartData).series} // Passing transformed series data
+                    categories={transformChartData(chartData).categories} // Passing categories for the x-axis
+                    chartId="revenue-expenses-charts"
+                  />
+                )}
               </div>
             </CardBody>
           </Card>
         </Col>
       )}
-      
+
       <ToastContainer closeButton={false} limit={1} />
     </React.Fragment>
   );

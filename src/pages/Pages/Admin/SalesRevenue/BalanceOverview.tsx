@@ -24,25 +24,31 @@ interface BalanceOverviewChartsProps {
 }
 
 export const BalanceOverviewCharts: React.FC<BalanceOverviewChartsProps> = ({
-  series,
-  categories,
+  series = [],
+  categories = [],
   chartId,
 }) => {
+  if (!series.length || !categories.length) {
+    console.warn("Chart data is empty, skipping render.");
+    return <p>No data available</p>;
+  }
+
   const chartOptions = {
     chart: {
       id: chartId,
-      type: 'line',
+      type: "line",
     },
     xaxis: {
-      categories, // Use the categories for the x-axis
+      type: "datetime", // Ensure ApexCharts understands date format
+      categories,
     },
     yaxis: {
       title: {
-        text: 'Values',
+        text: "Values",
       },
     },
     stroke: {
-      curve: 'smooth',
+      curve: "smooth",
     },
     tooltip: {
       shared: true,
@@ -156,22 +162,27 @@ const BalanceOverview = () => {
   }, [balanceOverviewData]);
 
   const transformChartData = (data: SalesDataItem[]) => {
-    const revenueData = data.map(item => item.revenue);
-    const appointmentsData = data.map(item => item.appointments);
-    const categories = data.map(item => item.date); // Extracting dates for the x-axis
-
+    if (!data || !Array.isArray(data)) {
+      console.error("Invalid chart data format", data);
+      return { series: [], categories: [] };
+    }
+  
+    const revenueData = data.map(item => (isNaN(Number(item.revenue)) ? 0 : Number(item.revenue)));
+    const appointmentsData = data.map(item => (isNaN(Number(item.appointments)) ? 0 : Number(item.appointments)));
+    const categories = data.map(item => item.date || "Unknown");
+  
     return {
       series: [
         {
-          name: 'Revenue',
-          data: revenueData,
+          name: "Revenue",
+          data: revenueData, // Must be number[]
         },
         {
-          name: 'Appointments',
-          data: appointmentsData,
+          name: "Appointments",
+          data: appointmentsData, // Must be number[]
         },
       ],
-      categories, // Pass categories for the x-axis
+      categories,
     };
   };
 
