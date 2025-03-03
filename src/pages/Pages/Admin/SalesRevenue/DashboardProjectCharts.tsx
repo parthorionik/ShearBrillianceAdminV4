@@ -4,10 +4,10 @@ import ReactApexChart from "react-apexcharts";
 const PrjectsStatusCharts = ({ chartId, series }: any) => {
 
     // Directly use hex colors for Success, Warning, and Danger
-    const chartColors = ["#0AB39C", "#F06548", "#F7B84B",]; // Success, Warning, Danger
+    const chartColors = ["#0AB39C", "#F7B84B", "#F06548"]; // Success, Warning, Danger
 
     var options: any = {
-        labels: ["Completed", "Cancelled"],
+        labels: ["Online Payment", "Offline Payment"],
         chart: {
             type: "donut",
             height: 230,

@@ -15,6 +15,16 @@ export const fetchTopServices = async (): Promise<any> => {
     throw error; // Rethrow the error for the calling function to handle
   }
 };
+// Fetch Payment data based on method
+export const fetchPaymentMethod = async (filter: string): Promise<any> => {
+  try {
+    const response = await apiClient.get(`${SALES_ENDPOINT}/payment?filter=${filter}`);
+    return response; // Return the response directly or response.data as needed
+  } catch (error) {
+    console.error("Error fetching top services:", error);
+    throw error; // Rethrow the error for the calling function to handle
+  }
+};
 
 //Fetch sales data based on filter
 export const fetchAppointmentSalesData = async (filter: string): Promise<any> => {
