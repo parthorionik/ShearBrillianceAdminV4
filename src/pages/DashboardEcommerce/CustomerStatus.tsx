@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
-import { CustomerStatusCharts } from './Customerchart';
+import { CustomerStatusCharts } from './CustomerChart';
 import { fetchCutomerStatus } from 'Services/DashboardService';
 import { toast, ToastContainer } from 'react-toastify';
 
@@ -53,7 +53,7 @@ const CustomerStatus: React.FC = () => {
 
     return (
         <React.Fragment>
-            <Col xxl={4} lg={6}>
+            <Col xxl={6} lg={6}>
                 <Card className="card-height-100">
                     <CardHeader className="align-items-center d-flex">
                         <h4 className="card-title mb-0 flex-grow-1">Customer Status</h4>

@@ -9,12 +9,14 @@ import { toast, ToastContainer } from "react-toastify";
 import config from "config";
 import RevenueStatus from "./RevenueStatus";
 import CustomerStatus from "./CustomerStatus";
+import { CustomerMixedChart } from "./CustomerMixedChart";
+import { Card, CardBody, CardHeader } from "reactstrap";
 
 export const DASHBOARD_ENDPOINT = "/dashboard";
 const { commonText } = config;
 
 const DashboardEcommerce = () => {
-  document.title = `${ commonText.PROJECT_NAME } Admin`;
+  document.title = `${commonText.PROJECT_NAME} Admin`;
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [rightColumn, setRightColumn] = useState<boolean>(true);
   const [showLoader, setShowLoader] = useState(true);
@@ -25,20 +27,19 @@ const DashboardEcommerce = () => {
   useEffect(() => {
     setShowLoader(true);
     const getDashboardData = async () => {
-    
       try {
         const response: any = await fetchDashboardData();
         setDashboardData(response);
         setShowLoader(false);
       } catch (error: any) {
-          // Check if the error has a response property (Axios errors usually have this)
-      if (error.response && error.response.data) {
-        const apiMessage = error.response.data.message; // Extract the message from the response
-        toast.error(apiMessage || "An error occurred"); // Show the error message in a toaster
-      } else {
-        // Fallback for other types of errors
-        toast.error(error.message || "Something went wrong");
-      }
+        // Check if the error has a response property (Axios errors usually have this)
+        if (error.response && error.response.data) {
+          const apiMessage = error.response.data.message; // Extract the message from the response
+          toast.error(apiMessage || "An error occurred"); // Show the error message in a toaster
+        } else {
+          // Fallback for other types of errors
+          toast.error(error.message || "Something went wrong");
+        }
       }
     };
     getDashboardData();
@@ -61,15 +62,29 @@ const DashboardEcommerce = () => {
               </div>
             </Col>
           </Row>
-        <div style={{display:"flex",gap:"10px"}}>
-          <ProjectsStatus />
-          <CustomerStatus/>
-          <RevenueStatus />
-        </div>
-          
+          <div className="d-lg-flex gap-2">
+            <ProjectsStatus />
+            <CustomerStatus />
+            {/* <RevenueStatus /> */}
+          </div>
+
+          <CustomerMixedChart />
+
+          {/* <Row>x
+            <Col lg={12}>
+              <Card>
+                <CardHeader>
+                  <h4 className="card-title mb-0">Multiple Y-Axis Charts</h4>
+                </CardHeader>
+                <CardBody>
+                  <CustomerMixedChart dataColors='["--vz-primary", "--vz-info", "--vz-success"]' />
+                </CardBody>
+              </Card>
+            </Col>
+          </Row> */}
         </Container>
       </div>
-      
+
       <ToastContainer closeButton={false} limit={1} />
     </React.Fragment>
   );
