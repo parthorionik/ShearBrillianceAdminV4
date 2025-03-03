@@ -436,7 +436,7 @@ const BarberSessionsTable: React.FC = () => {
             <div className="card-header border-0">
               <div className="d-flex align-items-center">
                 <h5 className="card-title mb-0 flex-grow-1">Barber Schedules</h5>
-                <b className="text-danger">Unavailable barber not show in the schedule</b>
+                <b className="text-danger">Unavailable barber not shown in the schedule</b>
                 <div className="flex-shrink-0">
                   {/* {(isCurrentWeekDay(today.getDate().toString()) || isSunday()) && ( */}
                   {/* <div className="d-flex flex-wrap gap-2">

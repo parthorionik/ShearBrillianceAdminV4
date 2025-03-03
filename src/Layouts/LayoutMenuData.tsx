@@ -128,7 +128,7 @@ const Navdata = () => {
         },
         {
             id: "calender",
-            label: "Future History",
+            label: "Calender",
             icon: "ri-calendar-2-line",
             link: "/calender-schedule",
             click: function (e: any) {
@@ -139,7 +139,7 @@ const Navdata = () => {
         },
         {
             id: "Insalonappointment",
-            label: "In-Salon Walk-In History",
+            label: "In-Salon Appointment",
             icon: "ri-calendar-check-line",
             link: "/in-salon-appointment",
             click: function (e: any) {

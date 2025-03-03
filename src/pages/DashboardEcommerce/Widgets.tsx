@@ -296,7 +296,7 @@ const Widgets = (props: any) => {
               <div className="d-flex align-items-center">
                 <div className="flex-grow-1 overflow-hidden">
                   <p className="text-uppercase fw-medium text-muted text-truncate mb-0">
-                    Pending Feature Appointments
+                    Feature Appointments
                   </p>
                 </div>
               </div>
@@ -377,7 +377,7 @@ const Widgets = (props: any) => {
               <div className="d-flex align-items-center">
                 <div className="flex-grow-1 overflow-hidden">
                   <p className="text-uppercase fw-medium text-muted text-truncate mb-0">
-                    Completed Feature Appointments
+                    Completed Appointments
                   </p>
                 </div>
               </div>
