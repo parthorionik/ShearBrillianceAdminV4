@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
-import { PrjectsStatusCharts } from './DashboardProjectCharts';
+import { PrjectsStatusCharts } from '../DashboardProjectCharts';
 import { fetchPaymentMethod } from 'Services/Sales';
 import { toast, ToastContainer } from 'react-toastify';
 
@@ -66,7 +66,7 @@ const PaymentChart: React.FC = () => {
 
     return (
         <React.Fragment>
-            <Col xxl={4} lg={6}>
+            <Col xxl={6} lg={6}>
                 <Card className="card-height-100">
                     <CardHeader className="align-items-center d-flex">
                         <h4 className="card-title mb-0 flex-grow-1">Payment Status</h4>
@@ -112,7 +112,7 @@ const PaymentChart: React.FC = () => {
                                 <div className="mt-3">
                                     <div className="d-flex justify-content-center align-items-center mb-4">
                                         <h2 className="me-3 ff-secondary mb-0">
-                                            {chartData.reduce((total, num) => total + num, 0)}
+                                        {chartData.reduce((total, num) => total + num, 0).toFixed(2)}
                                         </h2>
                                         <div>
                                             <p className="text-muted mb-0">Total Payment</p>
@@ -132,7 +132,7 @@ const PaymentChart: React.FC = () => {
                                                 {item.label}
                                             </p>
                                             <div>
-                                                <span className="text-muted pe-5">{item.count} Payment</span>
+                                                <span className="text-muted pe-5">{item.count.toFixed(2)}  Payment</span>
                                             </div>
                                         </div>
                                     ))}

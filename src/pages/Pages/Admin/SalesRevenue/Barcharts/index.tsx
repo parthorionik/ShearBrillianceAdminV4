@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardBody, CardHeader, Col, Container, Row } from 'reactstrap';
 import { Basic} from "./BarCharts";
+import PaymentChart from './PaymentChart';
 
 
 const BarCharts = () => {
@@ -11,14 +12,15 @@ const BarCharts = () => {
                     <Row>
                         <Col lg={6}>
                             <Card>
-                                <CardHeader>
+                                <CardHeader >
                                     <h4 className="card-title mb-0">Top Performing Services</h4>
                                 </CardHeader>
-                                <CardBody>
+                                <CardBody style={{marginBottom:"30px"}}>
                                     <Basic dataColors='["--vz-success"]'/>
                                 </CardBody>
                             </Card>
                         </Col>
+                        <PaymentChart/>
                     </Row>
                 </Container>
             </div>

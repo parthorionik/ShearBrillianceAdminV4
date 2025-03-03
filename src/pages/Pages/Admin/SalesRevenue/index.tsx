@@ -7,7 +7,7 @@ import BalanceOverview from 'pages/Pages/Admin/SalesRevenue/BalanceOverview';
 import CheckinOverview from 'pages/Pages/Admin/SalesRevenue/CheckinChart';
 import BarCharts from './Barcharts';
 import config from 'config';
-import PaymentChart from './PaymentChart';
+import PaymentChart from './Barcharts/PaymentChart';
 
 
 const { commonText } = config;
@@ -25,7 +25,7 @@ const Salesrevenueindex = () => {
                     <div style={{display:'flex', flexDirection:'column',}}>
                         <div style={{display:'flex', flexDirection:'row', justifyContent:'center'}}>
                         <BarCharts/>
-                        <PaymentChart/>
+                        {/* <PaymentChart/> */}
                         </div>
                         <BalanceOverview/>
                         <CheckinOverview />
