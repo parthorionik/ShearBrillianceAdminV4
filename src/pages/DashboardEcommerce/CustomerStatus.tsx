@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
-import { CustomerStatusCharts } from './CustomerChart';
+import { CustomerStatusCharts } from './Customerchart';
 import { fetchCutomerStatus } from 'Services/DashboardService';
 import { toast, ToastContainer } from 'react-toastify';
 
@@ -18,7 +18,6 @@ const CustomerStatus: React.FC = () => {
     const fetchData = async (filter: string): Promise<void> => {
         setLoading(true);
         try {
-            debugger
             const response = await fetchCutomerStatus(filter);
             if (response) {
                 const chartData = mapApiResponseToChartData(response);

@@ -19,6 +19,7 @@ const BarCharts = () => {
                                     <Basic dataColors='["--vz-success"]'/>
                                 </CardBody>
                             </Card>
+                            
                         </Col>
                         <PaymentChart/>
                     </Row>

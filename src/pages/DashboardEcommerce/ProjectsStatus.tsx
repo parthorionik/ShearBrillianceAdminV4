@@ -28,7 +28,6 @@ const ProjectsStatus: React.FC = () => {
     const fetchData = async (filter: string): Promise<void> => {
         setLoading(true);
         try {
-            debugger
             const response = await fetchAppointmentStatus(filter);
             if (response?.response) {
                 const data = response.response.filter((stats: any) => stats.status?.toLowerCase() === 'completed' || stats.status?.toLowerCase() === 'canceled')
