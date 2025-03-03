@@ -8,6 +8,7 @@ import ProjectsStatus from "./ProjectsStatus";
 import { toast, ToastContainer } from "react-toastify";
 import config from "config";
 import RevenueStatus from "./RevenueStatus";
+import CustomerStatus from "./CustomerStatus";
 
 export const DASHBOARD_ENDPOINT = "/dashboard";
 const { commonText } = config;
@@ -62,6 +63,7 @@ const DashboardEcommerce = () => {
           </Row>
         <div style={{display:"flex",gap:"10px"}}>
           <ProjectsStatus />
+          <CustomerStatus/>
           <RevenueStatus />
         </div>
           

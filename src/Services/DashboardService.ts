@@ -28,7 +28,19 @@ export const fetchAppointmentDashboardData = async (): Promise<any> => {
 // Fetch appointment status based on a dynamic filter
 export const fetchAppointmentStatus = async (filter: string): Promise<any> => {
   try {
+    debugger
     const response = await apiClient.get(`${DASHBOARD_ENDPOINT}/appointment-status`, { filter });
+    return response; // Access the 'data' property
+  } catch (error) {
+    console.error("Error fetching appointment status:", error);
+    throw error; // Rethrow to let the calling function handle it
+  }
+};
+
+export const fetchCutomerStatus = async (filter: string): Promise<any> => {
+  try {
+    debugger
+    const response = await apiClient.get(`${DASHBOARD_ENDPOINT}/customer-status`, { filter });
     return response; // Access the 'data' property
   } catch (error) {
     console.error("Error fetching appointment status:", error);
