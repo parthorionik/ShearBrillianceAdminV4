@@ -28,7 +28,7 @@ const ProfileDropdown = () => {
         if (authUSer) {
             const obj: any = JSON.parse(authUSer);
             setUserName(obj.user?.firstname + ' ' + obj.user?.lastname);
-            setUserPhoto(obj.user.profile_photo ?? Profile);
+            setUserPhoto(obj.user?.profile_photo ?? Profile);
         }
 
     }, [userName, user]);
