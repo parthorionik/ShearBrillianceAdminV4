@@ -1702,26 +1702,29 @@ const BarberTable: React.FC = () => {
                       </div>
                     </div>
                     {dayItem.isChecked ? (
-                      <div className="d-flex gap-2 mt-3 w-100">
+                      <div className="d-flex flex-column gap-2 mt-3 w-100">
+                      <div className="d-flex gap-2 flex-wrap w-100">
                         <Input
                           type="time"
                           value={dayItem.startTime}
                           onChange={e => handleTimeChange(index, 'startTime', e.target.value)}
-                          onBlur={() => handleTimeBlur(index, 'startTime')} // Validate onBlur
+                          onBlur={() => handleTimeBlur(index, 'startTime')}
                           disabled={dayItem.isReadonly}
                           required
-                          className="form-control-sm"
+                          className="form-control form-control-sm flex-grow-1"
                         />
                         <Input
                           type="time"
                           value={dayItem.endTime}
                           onChange={e => handleTimeChange(index, 'endTime', e.target.value)}
-                          onBlur={() => handleTimeBlur(index, 'endTime')} // Validate onBlur
+                          onBlur={() => handleTimeBlur(index, 'endTime')}
                           disabled={dayItem.isReadonly}
                           required
-                          className="form-control-sm"
+                          className="form-control form-control-sm flex-grow-1"
                         />
                       </div>
+                    </div>
+                    
                     ) : (
                       <p className="text-muted text-center mb-0 mt-2">Unavailable</p>
                     )}

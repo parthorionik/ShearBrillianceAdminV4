@@ -86,7 +86,7 @@ const Section = (props: any) => {
               </p>
             </div>
             {userRole?.role_name === "Admin" ||
-              userRole?.role_name === "Salon Owner" ? (
+            userRole?.role_name === "Salon Owner" ? (
               <div className="mt-3 mt-lg-0">
                 <div className="d-flex justify-content-between align-items-center col-auto p-2 bg-light">
                   <p className="text-uppercase fw-medium text-muted text-truncate mb-0 me-2">
@@ -112,7 +112,10 @@ const Section = (props: any) => {
                 className="form-control me-2 w-25"
                 value={selectedStartDate}
                 onChange={(dates: any) => setStartDate(dates[0])}
-                options={{ dateFormat: "Y-m-d" }}
+                options={{
+                  dateFormat: "Y-m-d",
+                  maxDate: new Date(), // Prevents future dates
+                }}
                 placeholder="Select Start Date"
               />
 
@@ -132,9 +135,11 @@ const Section = (props: any) => {
                 options={{
                   dateFormat: "Y-m-d",
                   minDate: selectedStartDate, // Set min date for End Date to Start Date
+                  maxDate: new Date(), // Prevents selecting future dates
                 }}
                 placeholder="Select End Date"
               />
+
               <button
                 type="button"
                 className="btn btn-primary d-flex align-items-center"
