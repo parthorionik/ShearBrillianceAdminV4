@@ -76,6 +76,7 @@ const CalenderScheduleInfo: React.FC = () => {
   const [showLoader, setShowLoader] = useState(true);
   const [deleteEvent, setDeleteEvent] = useState<string>("");
   const [eventName, setEventName] = useState<string>("");
+
   const [appointments, setAppointments] = useState<any>([]);
   const [isSearchClicked, setIsSearchClicked] = useState(false); // Track the button click
   const calendarRef = useRef<FullCalendar | null>(null); // Specify FullCalendar type
@@ -322,6 +323,8 @@ const CalenderScheduleInfo: React.FC = () => {
       setPreviousOption("");
       setEventName("");
       setDeleteEvent("");
+      stopAllProcesses();
+      restoreFullCalendarPopovers(); // Force FullCalendar to regenerate popovers
     } else {
       setModal(true);
     }
@@ -377,7 +380,69 @@ const CalenderScheduleInfo: React.FC = () => {
     }
   };
 
+  let lastClickedEvent: HTMLElement | null = null;
+  let removePopoverTimeout: NodeJS.Timeout | null = null;
+  let observer: MutationObserver | null = null;
+  let abortController: AbortController | null = null;
+
+  // Function to restore popover
+  const restoreFullCalendarPopovers = () => {
+    setTimeout(() => {
+      cancelPopoverRemoval(); // Stop any pending popover removals
+      const popovers = document.querySelectorAll(".fc-popover");
+
+      if (popovers.length === 0 && lastClickedEvent) {
+        console.log("No popovers found. Re-triggering event click...");
+        lastClickedEvent.click(); // Simulate clicking the event again
+      }
+    }, 200); // Short delay to allow modal closing
+  };
+
+  // Function to remove `.fc-popover` elements
+  const removeFullCalendarPopovers = () => {
+    // Ensure abortController is defined
+    if (!abortController) {
+      abortController = new AbortController();
+    }
+
+    // If the signal is already aborted, return
+    if (abortController.signal.aborted) return;
+
+    setTimeout(() => {
+      document.querySelectorAll(".fc-popover").forEach((el) => el.remove());
+    }, 200);
+  };
+
+// Function to cancel popover removal (call when clicking another event)
+const cancelPopoverRemoval = () => {
+  if (abortController) {
+    abortController.abort(); // Stop any pending popover removal
+    abortController = new AbortController(); // Reset it for future use
+  }
+};
+
+  // Stop all background processes when closing modal
+  const stopAllProcesses = () => {
+    if (removePopoverTimeout) {
+      clearTimeout(removePopoverTimeout);
+      removePopoverTimeout = null;
+    }
+
+    if (abortController) {
+      abortController.abort();
+      abortController = null;
+    }
+
+    if (observer) {
+      observer.disconnect();
+      observer = null;
+    }
+  };
   const handleEventClick = (arg: any) => {
+    cancelPopoverRemoval(); // Stop previous popover removal process
+    // Ensure old popovers are removed
+    removeFullCalendarPopovers();
+
     const event = arg.event;
     const st_date = event.start;
     const ed_date = event.end;
@@ -428,7 +493,36 @@ const CalenderScheduleInfo: React.FC = () => {
     setDeleteEvent(event.id);
     setIsEdit(true);
     setIsEditButton(false);
-    toggle();
+    setTimeout(() => {
+      toggle();
+    }, 100);
+
+    // Create MutationObserver
+    const observer = new MutationObserver(() => {
+      removeFullCalendarPopovers();
+    });
+
+    // Observe DOM changes
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Store observer reference to prevent multiple observers
+    if ((window as any).currentObserver) {
+      (window as any).currentObserver.disconnect();
+    }
+    (window as any).currentObserver = observer;
+
+    // Cancel any pending popover removals
+    if (removePopoverTimeout) {
+      clearTimeout(removePopoverTimeout);
+      removePopoverTimeout = null;
+    }
+
+    if (abortController) {
+      abortController.abort(); // Stop removal if another event is clicked
+    }
+
+    // Store the last clicked event
+    lastClickedEvent = arg.el;
   };
 
   // Set user data for editing
