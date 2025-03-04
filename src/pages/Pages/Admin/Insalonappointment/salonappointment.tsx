@@ -140,7 +140,7 @@ const AppointmentCards = () => {
     <><div className="container-fluid mt-1">
       <div className="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-4">
         {cards?.length > 0 ? cards?.slice(0, 16).map((card: any, index: number) => (
-          <div className="col" key={index}> {/* Added a unique key */}
+          <div className="col col-md-6" key={index}> {/* Added a unique key */}
             <div
               className="card task-box"
               style={{ marginBottom: "0px", maxWidth: "230px", margin: "0 auto" }}
