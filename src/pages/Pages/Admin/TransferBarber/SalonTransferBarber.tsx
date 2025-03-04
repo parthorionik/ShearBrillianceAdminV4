@@ -298,7 +298,7 @@ const SalonTransferBarber: React.FC = () => {
                                 borderRadius: "5px",
                                 color: barber.color === "#000000" || barber.color === "#0a0a0a" ? "#ffffff" : "#000000",
                                 boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                                width: "100%",
+                                width: "50%",
                                 textAlign: "center",
                                 ...provided.draggableProps.style,
                               }}
@@ -358,7 +358,7 @@ const SalonTransferBarber: React.FC = () => {
                                 borderRadius: "5px",
                                 color: barber.color === "#000000" ? "#ffffff" : "#000000",
                                 boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                                width: "100%",
+                                width: "50%",
                                 textAlign: "center",
                                 ...provided.draggableProps.style,
                               }}

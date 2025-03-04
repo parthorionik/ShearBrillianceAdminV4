@@ -112,7 +112,7 @@ const PaymentChart: React.FC = () => {
                                 <div className="mt-3">
                                     <div className="d-flex justify-content-center align-items-center mb-4">
                                         <h2 className="me-3 ff-secondary mb-0">
-                                        {chartData.reduce((total, num) => total + num, 0).toFixed(2)}
+                                        ${chartData.reduce((total, num) => total + num, 0).toFixed(2)}
                                         </h2>
                                         <div>
                                             <p className="text-muted mb-0">Total Payment</p>
