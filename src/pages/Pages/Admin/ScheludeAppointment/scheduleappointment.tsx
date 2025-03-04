@@ -1349,7 +1349,7 @@ const Scheduleappointment = () => {
                                 const currentCount =
                                   serviceCounters[service.id] || 1;
                                 return (
-                                  <div className="col-md-3" key={service.id}>
+                                  <div className="col-md-4 " key={service.id}>
                                     <div
                                       className="card service-card"
                                       style={{
@@ -1381,7 +1381,7 @@ const Scheduleappointment = () => {
                                         </p>
                                         {isSelected && (
                                           <div>
-                                            <div className="input-step mt-2">
+                                            <div className="input-step mt-2 ">
                                               <button
                                                 type="button"
                                                 className="minus material-shadow"
@@ -1622,7 +1622,7 @@ const Scheduleappointment = () => {
                                         Select Date
                                       </Label>
                                       <Flatpickr
-                                        className={`form-control ${selectedDate
+                                        className={`form-control bg-light border-light  ${selectedDate
                                           ? "selected-date-highlight"
                                           : ""
                                           }`}

@@ -29,25 +29,25 @@ const PaymentChart: React.FC = () => {
         setLoading(true);
         try {
             const response = await fetchPaymentMethod(filter);
+            console.log("API Response:", response);
     
-            if (response) { // Ensure response.data exists
-                const { online, offline } = response; // Extract values
-                const chartData = [online, offline]; // Convert to array for chart
-                setChartData(chartData);
-            } else {
-                setChartData([0, 0]); // Default to zero if no response
-            }
+            // Convert to numbers and apply `.toFixed(2)`
+            const online = response?.online ? Number(response.online).toFixed(2) : "0.00";
+            const offline = response?.offline ? Number(response.offline).toFixed(2) : "0.00";
+    
+            console.log("Processed Values:", online, offline);
+    
+            // Convert back to numbers for ApexCharts
+            setChartData([parseFloat(online), parseFloat(offline)]);
         } catch (error: any) {
-            if (error.response?.data?.message) {
-                toast.error(error.response.data.message);
-            } else {
-                toast.error(error.message || "Something went wrong");
-            }
-            setChartData([0, 0]); // Handle error by resetting data
+            console.error("Fetch Error:", error);
+            toast.error(error.response?.data?.message || "Something went wrong");
+            setChartData([0.00, 0.00]); // Fallback with formatted values
         } finally {
             setLoading(false);
         }
     };
+    
     
 
     const onChangeChartPeriod = (filter: string): void => {
@@ -118,8 +118,8 @@ const PaymentChart: React.FC = () => {
                                             <p className="text-muted mb-0">Total Payment</p>
                                         </div>
                                     </div>
-
-                                    {[
+ 
+                                   {[
                                         { color: "success", label: "Online Payment", count: chartData[0] },
                                         { color: "warning", label: "Offline Payment", count: chartData[1] },
                                     ].map((item, index) => (
