@@ -504,10 +504,8 @@ const AppointmentTable: React.FC = () => {
   const handleTipChange = (e: any) => {
     const value = e.target.value;
     setTipPercentage(value);
-    if (value !== 'custom') {
-      setCustomTip('');
-      calculateFinalAmount(totalPrice, value, '');
-    }
+    setCustomTip('');
+    calculateFinalAmount(totalPrice, value !== 'custom' ? value : '', '');
   };
 
   const handleCustomTipChange = (e: any) => {

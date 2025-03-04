@@ -1029,7 +1029,7 @@ const Board = () => {
         const sessionResponse = await getBarberSessionByBarber(obj);
         if (parseInt(sessionResponse) === 102) {
           setIsAppointmentAvailable(true);
-          let total; 
+          let total;
           if (selectedBarber) {
             if (services) {
               const totalPrice = services.reduce((acc: any, service: any) => {
@@ -1463,6 +1463,9 @@ const Board = () => {
     if (value !== 'custom') {
       setCustomTip('');
       calculateFinalAmount(totalPrice, value, '');
+    } else {
+      setCustomTip('');
+      calculateFinalAmount(totalPrice, '', '');
     }
   };
 

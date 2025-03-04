@@ -635,10 +635,8 @@ const Scheduleappointment = () => {
     const appointmd = selectedBarber;
     const value = e.target.value;
     setTipPercentage(value);
-    if (value !== 'custom') {   
-      setCustomTip('');
-      calculateFinalAmount(totalPrice, value, '');
-    }
+    setCustomTip('');
+    calculateFinalAmount(totalPrice, value !== 'custom' ? value : '', '');
   };
 
   const handleCustomTipChange = (e: any) => {
@@ -1055,7 +1053,7 @@ const Scheduleappointment = () => {
     }
     return slot ? formatTime(slot) : "";
   };
-   
+
   document.title = `${commonText.PROJECT_NAME}- Admin & Dashboard Template`;
   return (
     <React.Fragment>
