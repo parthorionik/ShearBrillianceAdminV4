@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
-import { CustomerStatusCharts } from './Customerchart';
+import { CustomerStatusCharts } from './CustomerChart';
 import { fetchCutomerStatus } from 'Services/DashboardService';
 import { toast, ToastContainer } from 'react-toastify';
 
