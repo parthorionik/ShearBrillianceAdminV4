@@ -188,8 +188,8 @@ const Widgets = (props: any) => {
                             </div>
                             <div>
                                 <div className="avatar-sm flex-shrink-0">
-                                    <span className={"avatar-title rounded-circle fs-4 bg-danger-subtle text-danger"}>
-                                        <i className="ri-delete-bin-line"></i>
+                                    <span className={"avatar-title rounded-circle fs-4 bg-success-subtle text-success"}>
+                                        <i className="ri-money-dollar-circle-line"></i>
                                     </span>
                                 </div>
                             </div>
@@ -220,8 +220,8 @@ const Widgets = (props: any) => {
                             </div>
                             <div>
                                 <div className="avatar-sm flex-shrink-0">
-                                    <span className={"avatar-title rounded-circle fs-4 bg-danger-subtle text-danger"}>
-                                        <i className="ri-delete-bin-line"></i>
+                                    <span className={"avatar-title rounded-circle fs-4 bg-success-subtle text-success"}>
+                                        <i className="ri-money-dollar-circle-line"></i>
                                     </span>
                                 </div>
                             </div>
