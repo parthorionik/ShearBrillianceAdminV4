@@ -112,10 +112,11 @@ const Section = (props: any) => {
                 className="form-control me-2 w-25"
                 value={selectedStartDate}
                 onChange={(dates: any) => setStartDate(dates[0])}
-                options={{
-                  dateFormat: "Y-m-d",
-                  maxDate: new Date(), // Prevents future dates
-                }}
+                options={{ dateFormat: "Y-m-d" }}
+                // options={{
+                //   dateFormat: "Y-m-d",
+                //   maxDate: new Date(), // Prevents future dates
+                // }}
                 placeholder="Select Start Date"
               />
 
@@ -135,7 +136,7 @@ const Section = (props: any) => {
                 options={{
                   dateFormat: "Y-m-d",
                   minDate: selectedStartDate, // Set min date for End Date to Start Date
-                  maxDate: new Date(), // Prevents selecting future dates
+                  // maxDate: new Date(), // Prevents selecting future dates
                 }}
                 placeholder="Select End Date"
               />
