@@ -1,11 +1,10 @@
 import React from 'react';
 import { Card, CardBody, CardHeader, Col, Container, Row } from 'reactstrap';
-import { Basic} from "./BarCharts";
-import PaymentChart from './PaymentChart';
-import { TopSalon } from '../TopSalonAndBarberChart/TopSalon';
+import { TopBarber} from "./TopBarber";
+import PaymentChart from '../Barcharts/PaymentChart';
 
 
-const BarCharts = () => {
+const TopCharts = () => {
     return (
         <React.Fragment>
             <div className="page-content" style={{padding:'0', width: '100%'}}>            
@@ -17,23 +16,13 @@ const BarCharts = () => {
                                     <h4 className="card-title mb-0">Top Performing Services</h4>
                                 </CardHeader>
                                 <CardBody style={{marginBottom:"30px"}}>
-                                    <Basic dataColors='["--vz-success"]'/>
+                                    <TopBarber dataColors='["--vz-success"]'/>
                                 </CardBody>
                             </Card>
                             
                         </Col>
-                        <Col lg={6}>
-                            <Card>
-                                <CardHeader >
-                                    <h4 className="card-title mb-0">Top Performing Services</h4>
-                                </CardHeader>
-                                <CardBody style={{marginBottom:"30px"}}>
-                                    <TopSalon dataColors='["--vz-success"]'/>
-                                </CardBody>
-                            </Card>
-                            
-                        </Col>
-                        {/* <TopSalon/> */}
+                        
+                          <PaymentChart/> 
                     </Row>
                 </Container>
             </div>
@@ -41,4 +30,4 @@ const BarCharts = () => {
     );
 };
 
-export default BarCharts;
+export default TopCharts;

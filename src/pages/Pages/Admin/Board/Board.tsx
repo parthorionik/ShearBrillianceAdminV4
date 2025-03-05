@@ -563,6 +563,7 @@ const Board = () => {
   }, [token, activeFilterBarber]); // Only depend on id and token
 
   const fetchAppointments = async () => {
+    debugger
     try {
       setShowLoader(true);
       setActiveFilter("All");
@@ -1444,6 +1445,17 @@ const Board = () => {
     return value;
   };
 
+  const formatPaymentMode = (mode: string) => {
+    switch (mode) {
+      case "Pay_Online":
+        return "Pay Online";
+      case "Pay_In_Person":
+        return "Pay in Person";
+      default:
+        return "Unknown";
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     // Allow only digit keys, backspace, delete, and navigation keys
     const allowedKeys = [
@@ -2199,10 +2211,15 @@ const Board = () => {
                                               <b>Salon: </b>{" "}
                                               <span>{card.salon}</span>
                                             </div>
+                                            
                                           </div>
                                         </div>
                                         <div className="card-footer border-top-dashed cursor-auto">
                                           <div>
+                                          <div className="flex-grow-1">
+  <b>Payment Mode: </b>
+  <span>{formatPaymentMode(card.paymentMode)}</span>
+</div>
                                             <div className="flex-grow-1">
                                               <b>Payment:</b>
                                               <b
