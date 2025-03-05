@@ -472,7 +472,7 @@ const Widgets = (props: any) => {
                         end={props?.dashboard?.revenue?.total?.toFixed(2)}
                         decimals={2}
                         // decimal={item.decimals}
-                        suffix=""
+                        prefix="$"
                         duration={3}
                       />
                     </span>
@@ -512,7 +512,7 @@ const Widgets = (props: any) => {
                         end={props?.dashboard?.revenue?.offline?.toFixed(2)}
                         decimals={2}
                         // decimal={item.decimals}
-                        suffix=""
+                        prefix="$"
                         duration={3}
                       />
                     </span>
@@ -553,7 +553,7 @@ const Widgets = (props: any) => {
                           props?.dashboard?.revenue?.online?.toFixed(2)
                         }
                         decimals={2}
-                        suffix=""
+                        prefix="$"
                         duration={3}
                       />
                     </span>
