@@ -177,7 +177,7 @@ const Widgets = (props: any) => {
                                             start={0}
                                             end={props?.dashboard?.canceledAppointmentsCount}
                                             // decimal={item.decimals}
-                                            suffix=""
+                                            prefix="$"
                                             duration={3}
                                         />
                                     </span>
@@ -209,7 +209,7 @@ const Widgets = (props: any) => {
                                             start={0}
                                             end={props?.dashboard?.canceledAppointmentsCount}
                                             // decimal={item.decimals}
-                                            suffix=""
+                                            prefix="$"
                                             duration={3}
                                         />
                                     </span>
