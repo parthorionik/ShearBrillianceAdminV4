@@ -200,7 +200,7 @@ const CheckinOverview = () => {
         <Col xxl={12}>
           <Card className="card-height-100">
             <CardHeader className="align-items-center d-flex">
-              <h4 className="card-title mb-0 flex-grow-1">Sales and Walkin Overview</h4>
+              <h4 className="card-title mb-0 flex-grow-1">Sales for walking</h4>
               <div className="flex-shrink-0">
                 <UncontrolledDropdown className="card-header-dropdown">
                   <DropdownToggle className="text-reset dropdown-btn" tag="a" role="button">
