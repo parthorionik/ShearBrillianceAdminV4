@@ -8,6 +8,7 @@ import CheckinOverview from 'pages/Pages/Admin/SalesRevenue/CheckinChart';
 import BarCharts from './Barcharts';
 import config from 'config';
 import PaymentChart from './Barcharts/PaymentChart';
+import TopCharts from './TopSalonAndBarberChart';
 
 
 const { commonText } = config;
@@ -25,8 +26,13 @@ const Salesrevenueindex = () => {
                     <div style={{display:'flex', flexDirection:'column',}}>
                         <div style={{display:'flex', flexDirection:'row', justifyContent:'center'}}>
                         <BarCharts/>
-                        {/* <PaymentChart/> */}
+                       
                         </div>
+                        <div style={{display:'flex', flexDirection:'row', justifyContent:'center'}}>
+                     
+                        <TopCharts/>
+                        </div>
+                        
                         <BalanceOverview/>
                         <CheckinOverview />
                     </div>
