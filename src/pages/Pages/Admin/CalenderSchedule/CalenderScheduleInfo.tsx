@@ -979,6 +979,8 @@ const cancelPopoverRemoval = () => {
                             ? "red"
                             : "orange",
                       fontWeight: "bold",
+                      width:"auto"
+                      
                     }}
                   >
                     <option
@@ -1024,7 +1026,7 @@ const cancelPopoverRemoval = () => {
                     data-bs-target="#createboardModal"
                     onClick={handleOpen}
                   >
-                    <i className="ri-add-line align-bottom me-1"></i> Add Haircut Details
+                    <i className="ri-add-line align-bottom me-1" style={{ marginTop: "30px" }}></i> Add Haircut Details
                   </button>
                 </div>
               </div>
