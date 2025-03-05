@@ -1,7 +1,7 @@
-import { APIClient } from './api_helper';
+import { APIClient } from "./api_helper";
 
 const apiClient = new APIClient();
-const DASHBOARD_ENDPOINT = 'dashboard';
+const DASHBOARD_ENDPOINT = "dashboard";
 
 // Fetch the list of all salons
 export const fetchDashboardData = async (): Promise<any> => {
@@ -17,7 +17,9 @@ export const fetchDashboardData = async (): Promise<any> => {
 // Fetch the list of all salons
 export const fetchAppointmentDashboardData = async (): Promise<any> => {
   try {
-    const response = await apiClient.get(`${DASHBOARD_ENDPOINT}/appointment-dashboard`);
+    const response = await apiClient.get(
+      `${DASHBOARD_ENDPOINT}/appointment-dashboard`
+    );
     return response; // Access the 'data' property
   } catch (error) {
     console.error("Error fetching dashboard dat:", error);
@@ -28,8 +30,10 @@ export const fetchAppointmentDashboardData = async (): Promise<any> => {
 // Fetch appointment status based on a dynamic filter
 export const fetchAppointmentStatus = async (filter: string): Promise<any> => {
   try {
-    
-    const response = await apiClient.get(`${DASHBOARD_ENDPOINT}/appointment-status`, { filter });
+    const response = await apiClient.get(
+      `${DASHBOARD_ENDPOINT}/appointment-status`,
+      { filter }
+    );
     return response; // Access the 'data' property
   } catch (error) {
     console.error("Error fetching appointment status:", error);
@@ -39,8 +43,10 @@ export const fetchAppointmentStatus = async (filter: string): Promise<any> => {
 
 export const fetchCutomerStatus = async (filter: string): Promise<any> => {
   try {
-    
-    const response = await apiClient.get(`${DASHBOARD_ENDPOINT}/customer-status`, { filter });
+    const response = await apiClient.get(
+      `${DASHBOARD_ENDPOINT}/customer-status`,
+      { filter }
+    );
     return response; // Access the 'data' property
   } catch (error) {
     console.error("Error fetching appointment status:", error);
@@ -48,4 +54,17 @@ export const fetchCutomerStatus = async (filter: string): Promise<any> => {
   }
 };
 
-
+export const fetchCustomerYearlyStatus = async (
+  filter: string
+): Promise<any> => {
+  try {
+    debugger
+    const response = await apiClient.get(
+      `${DASHBOARD_ENDPOINT}/customer-yearly-status`
+    );
+    return response;
+  } catch (error) {
+    console.error("Error fetching customer yearly status:", error);
+    throw error; // Rethrow for handling in calling function
+  }
+};
