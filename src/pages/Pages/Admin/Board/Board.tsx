@@ -2702,47 +2702,65 @@ const Board = () => {
                 ) : null}
               </Col>
               <Col lg={12}>
-                <Label className="form-label me-1">Tip</Label>
-                <div className="btn-group">
-                  {[2, 5, 10].map((percentage) => (
-                    <Label
-                      key={percentage}
-                      className={`btn btn-outline-primary ${tipPercentage == percentage ? 'active' : ''}`}
-                    >
-                      <Input
-                        type="radio"
-                        name="tip"
-                        value={percentage}
-                        checked={tipPercentage == percentage}
-                        onChange={handleTipChange}
-                        className="d-none"
-                      />
-                      {percentage}%
-                    </Label>
-                  ))}
-                  <Label className={`btn btn-outline-primary ${tipPercentage === 'custom' ? 'active' : ''}`}>
-                    <Input
-                      type="radio"
-                      name="tip"
-                      value="custom"
-                      checked={tipPercentage === 'custom'}
-                      onChange={handleTipChange}
-                      className="d-none"
-                    />
-                    Custom
-                  </Label>
-                </div>
+  <Label className="form-label me-1">Tip</Label>
+  <div className="btn-group">
+    {/* None Option */}
+    <Label className={`btn btn-outline-primary ${tipPercentage === 0 ? 'active' : ''}`}>
+      <Input
+        type="radio"
+        name="tip"
+        value={0}
+        checked={tipPercentage === 0}
+        onChange={handleTipChange}
+        className="d-none"
+      />
+      None
+    </Label>
 
-                {tipPercentage === 'custom' && (
-                  <Input
-                    type="number"
-                    placeholder="Enter custom tip"
-                    value={customTip}
-                    onChange={handleCustomTipChange}
-                    className="mt-2"
-                  />
-                )}
-              </Col>
+    {/* Preset Tip Options */}
+    {[20, 25, 30, 40].map((percentage) => (
+      <Label
+        key={percentage}
+        className={`btn btn-outline-primary ${tipPercentage == percentage ? 'active' : ''}`}
+      >
+        <Input
+          type="radio"
+          name="tip"
+          value={percentage}
+          checked={tipPercentage == percentage}
+          onChange={handleTipChange}
+          className="d-none"
+        />
+        {percentage}%
+      </Label>
+    ))}
+
+    {/* Custom Tip Option */}
+    <Label className={`btn btn-outline-primary ${tipPercentage === 'custom' ? 'active' : ''}`}>
+      <Input
+        type="radio"
+        name="tip"
+        value="custom"
+        checked={tipPercentage === 'custom'}
+        onChange={handleTipChange}
+        className="d-none"
+      />
+      Custom
+    </Label>
+  </div>
+
+  {/* Custom Tip Input Field */}
+  {tipPercentage === 'custom' && (
+    <Input
+      type="number"
+      placeholder="Enter custom tip"
+      value={customTip}
+      onChange={handleCustomTipChange}
+      className="mt-2"
+    />
+  )}
+</Col>
+
 
               <Col lg={12} className="d-flex justify-content-between align-item-center">
                 <h5>Total: ${totalPrice.toFixed(2)}</h5>

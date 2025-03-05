@@ -1240,7 +1240,18 @@ const AppointmentTable: React.FC = () => {
               <Col lg={12}>
                 <Label className="form-label me-1">Tip</Label>
                 <div className="btn-group">
-                  {[2, 5, 10].map((percentage) => (
+                   <Label className={`btn btn-outline-primary ${tipPercentage === 0 ? 'active' : ''}`}>
+                        <Input
+                          type="radio"
+                          name="tip"
+                          value={0}
+                          checked={tipPercentage === 0}
+                          onChange={handleTipChange}
+                          className="d-none"
+                        />
+                        None
+                      </Label>
+                  {[20, 25, 30,40].map((percentage) => (
                     <Label
                       key={percentage}
                       className={`btn btn-outline-primary ${tipPercentage == percentage ? 'active' : ''}`}
