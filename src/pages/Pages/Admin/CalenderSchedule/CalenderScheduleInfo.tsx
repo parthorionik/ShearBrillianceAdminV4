@@ -776,7 +776,8 @@ const cancelPopoverRemoval = () => {
                   <div className={!storeUserInfo.salon ? "col-sm-2 col-4" : "col-sm-4 col-md-3 col-lg-3 col-xl-3 col-xxl-3 col-6"}>
                     <button
                       type="button"
-                      className="btn btn-primary w-100"
+                      className="btn btn-primary"
+                      style={{width : "126px"}}
                       id="btn-delete-event"
                       onClick={filterAppointment}
                       disabled={showSpinner} // Disable button when loader is active
@@ -979,6 +980,8 @@ const cancelPopoverRemoval = () => {
                             ? "red"
                             : "orange",
                       fontWeight: "bold",
+                      width:"auto"
+                      
                     }}
                   >
                     <option
@@ -1024,7 +1027,7 @@ const cancelPopoverRemoval = () => {
                     data-bs-target="#createboardModal"
                     onClick={handleOpen}
                   >
-                    <i className="ri-add-line align-bottom me-1"></i> Add Haircut Details
+                    <i className="ri-add-line align-bottom me-1" style={{ marginTop: "30px" }}></i> Add Haircut Details
                   </button>
                 </div>
               </div>
