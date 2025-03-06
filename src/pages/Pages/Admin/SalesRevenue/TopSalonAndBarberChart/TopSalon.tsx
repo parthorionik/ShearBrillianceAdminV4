@@ -6,91 +6,125 @@ import { toast, ToastContainer } from "react-toastify";
 
 const apiClient = new APIClient();
 
-const TopSalon = ({ dataColors }: any) => {
-  const [topServices, setTopServices] = useState<any[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Fetch API data on component mount
-    const fetchTopServices = async () => {
-      try {
-        const response: any = await apiClient.get("sales/gettopService");
-
-        // Ensure the response has the correct structure
-        if (response) {
-          setTopServices(response); // Update state with the 'data' from API response
-        }
-      } catch (error: any) {
-        // Check if the error has a response property (Axios errors usually have this)
-        if (error.response && error.response.data) {
-          const apiMessage = error.response.data.message; // Extract the message from the response
-          toast.error(apiMessage || "An error occurred"); // Show the error message in a toaster
-        } else {
-          // Fallback for other types of errors
-          toast.error(error.message || "Something went wrong");
-        }
-        setError(error);
-      }
-    };
-
-    fetchTopServices();
-  }, []);
-
-  const BasicColors = getChartColorsArray(dataColors);
-
-  // Ensure topServices is not empty before trying to map over it
-  const appointment = [
-    {
-      data: topServices.map((service: any) => parseInt(service.usageCount)), // Use usageCount for data
-    },
+const TopSalon = ({ dataColors } : any) => {
+  var chartColumnDatatalabelColors = getChartColorsArray(dataColors);
+  const series = [
+      {
+          name: "Inflation",
+          data: [2.5, 3.2, 5.0, 10.1, 4.2, 3.8, 3, 2.4, 4.0, 1.2, 3.5, 0.8],
+      },
   ];
 
-  const options: any = {
-    chart: {
-      toolbar: {
-        show: !1,
+  const options :any = {
+      chart: {
+          toolbar: {
+              show: !1,
+          },
       },
-    },
-    plotOptions: {
-      bar: {
-        horizontal: !0,
+      plotOptions: {
+          bar: {
+              dataLabels: {
+                  position: "top", // top, center, bottom
+              },
+          },
       },
-    },
-    dataLabels: {
-      enabled: !1,
-    },
-    colors: BasicColors,
-    grid: {
-      borderColor: "#f1f1f1",
-    },
-    xaxis: {
-      categories: topServices.map((service: any) => service.serviceName), // Use serviceName for categories
-    },
+      dataLabels: {
+          enabled: !0,
+          formatter: function (val : any) {
+              return val + "%";
+          },
+          offsetY: -20,
+          style: {
+              fontSize: "12px",
+              colors: ["#adb5bd"],
+          },
+      },
+      colors: chartColumnDatatalabelColors,
+      grid: {
+          borderColor: "#f1f1f1",
+      },
+      xaxis: {
+          categories: [
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec",
+          ],
+          position: "top",
+          labels: {
+              offsetY: -18,
+          },
+          axisBorder: {
+              show: !1,
+          },
+          axisTicks: {
+              show: !1,
+          },
+          crosshairs: {
+              fill: {
+                  type: "gradient",
+                  gradient: {
+                      colorFrom: "#D8E3F0",
+                      colorTo: "#BED1E6",
+                      stops: [0, 100],
+                      opacityFrom: 0.4,
+                      opacityTo: 0.5,
+                  },
+              },
+          },
+          tooltip: {
+              enabled: !0,
+              offsetY: -35,
+          },
+      },
+      fill: {
+          gradient: {
+              shade: "light",
+              type: "horizontal",
+              shadeIntensity: 0.25,
+              gradientToColors: undefined,
+              inverseColors: !0,
+              opacityFrom: 1,
+              opacityTo: 1,
+              stops: [50, 0, 100, 100],
+          },
+      },
+      yaxis: {
+          axisBorder: {
+              show: !1,
+          },
+          axisTicks: {
+              show: !1,
+          },
+          labels: {
+              show: !1,
+              formatter: function (val : any) {
+                  return val + "%";
+              },
+          },
+      },
+      title: {
+          text: "Monthly Inflation in Argentina, 2002",
+          floating: !0,
+          offsetY: 320,
+          align: "center",
+          style: {
+              color: "#444",
+              fontWeight: 500,
+          },
+      },
   };
 
   return (
-    <React.Fragment>
-      {error ? (
-        <p>Error: {error}</p>
-      ) : (
-        <>
-          <ReactApexChart
-            dir="ltr"
-            className="apex-charts"
-            options={options}
-            series={appointment}
-            type="bar"
-            height={350}
-          />
-          {/* <div>
-            <h4>API Data:</h4>
-            <pre>{JSON.stringify(topServices, null, 2)}</pre>
-          </div> */}
-        </>
-      )}
-      
-      <ToastContainer closeButton={false} limit={1} />
-    </React.Fragment>
+      <ReactApexChart dir="ltr" className="apex-charts" series={series} options={options} type="bar" height={350} />
   );
 };
 
