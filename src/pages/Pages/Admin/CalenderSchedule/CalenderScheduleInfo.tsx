@@ -157,7 +157,7 @@ const CalenderScheduleInfo: React.FC = () => {
   const getSalonBabrer = async (salonId: any) => {
     try {
       // Fetch barbers for the selected salon
-      const barberResponse = await fetchBarberBySalon(salonId);
+      const barberResponse = await fetchBarberBySalon(salonId, 1);
       // Check if the barberResponse itself has data or is not empty
       if (barberResponse && barberResponse.length > 0) {
         const barbers = barberResponse; // Assuming the response is directly the list of barbers

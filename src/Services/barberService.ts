@@ -111,7 +111,7 @@ export const deleteBarber = async (id: number): Promise<void> => {
   }
 };
 
-export const fetchBarberBySalon = async (salonId: any, category = 1): Promise<any> => {
+export const fetchBarberBySalon = async (salonId: any, category: any): Promise<any> => {
   try {
     
     const response = await apiClient.get(`${BARBER_ENDPOINT}`, {

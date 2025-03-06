@@ -110,7 +110,7 @@ const Salesrevenue = () => {
     try {
       
       // Fetch barbers for the selected salon
-      const barberResponse = await fetchBarberBySalon(salonId);
+      const barberResponse = await fetchBarberBySalon(salonId, null);
       // Check if the barberResponse itself has data or is not empty
       if (barberResponse && barberResponse.length > 0) {
         const barbers = barberResponse; // Assuming the response is directly the list of barbers

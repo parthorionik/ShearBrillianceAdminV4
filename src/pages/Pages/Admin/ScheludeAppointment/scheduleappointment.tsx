@@ -393,7 +393,7 @@ const Scheduleappointment = () => {
       if (formData.selectedSalon) {
         try {
           const response: any = await fetchBarberBySalon(
-            formData.selectedSalon
+            formData.selectedSalon, 1
           );
           if (response?.length > 0) {
             setSelectedBarber(response);
