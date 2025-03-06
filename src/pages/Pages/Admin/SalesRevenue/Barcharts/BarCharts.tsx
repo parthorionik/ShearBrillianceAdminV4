@@ -28,7 +28,7 @@ const Basic = ({ dataColors }: any) => {
         } else {
           // Fallback for other types of errors
           toast.error(error.message || "Something went wrong");
-        }
+        }  
         setError(error);
       }
     };
@@ -41,6 +41,7 @@ const Basic = ({ dataColors }: any) => {
   // Ensure topServices is not empty before trying to map over it
   const appointment = [
     {
+      name: "Total Appointments",
       data: topServices.map((service: any) => parseInt(service.usageCount)), // Use usageCount for data
     },
   ];

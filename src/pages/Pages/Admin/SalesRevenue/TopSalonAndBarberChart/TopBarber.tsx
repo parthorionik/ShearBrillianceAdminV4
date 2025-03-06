@@ -81,7 +81,7 @@ const TopBarber = ({ dataColors }: any) => {
     tooltip: {
       y: {
         formatter: function (value: any, { dataPointIndex }: any) {
-          return `${value}(${barberData.salons[dataPointIndex]})`;
+          return `${value} (${barberData.salons[dataPointIndex]})`;
         },
       },
     },
