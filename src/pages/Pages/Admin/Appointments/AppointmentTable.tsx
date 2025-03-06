@@ -79,7 +79,9 @@ const AppointmentTable: React.FC = () => {
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [tipPercentage, setTipPercentage] = useState(null);
-  const [customTip, setCustomTip] = useState('');
+  const [customTip, setCustomTip] = useState("");
+  const [isInvalid, setIsInvalid] = useState(false);
+  
   const [totalPrice, setTotalPrice] = useState(0);
   const [finalAmount, setFinalAmount] = useState(0);
   const [tipAmount, setTipAmount] = useState(0);
@@ -344,11 +346,15 @@ const AppointmentTable: React.FC = () => {
           .filter((brbr: any) => brbr.barber.category === 2)
           .map((brbr: any) => {
             const today = new Date().toISOString().split("T")[0];
-            const todayScheduleInfo = brbr.barber?.schedule.find((day: any) => day.date === today);
+            const todayScheduleInfo = brbr.barber?.schedule.find(
+              (day: any) => day.date === today
+            );
             const obj = {
               id: brbr.barber?.id,
               name: brbr.barber.name,
-              start_time: todayScheduleInfo ? todayScheduleInfo.startTime : null,
+              start_time: todayScheduleInfo
+                ? todayScheduleInfo.startTime
+                : null,
               end_time: todayScheduleInfo ? todayScheduleInfo.endTime : null,
               availability_status: brbr.barber.availability_status,
               barberInfo: brbr.barber,
@@ -504,15 +510,32 @@ const AppointmentTable: React.FC = () => {
   const handleTipChange = (e: any) => {
     const value = e.target.value;
     setTipPercentage(value);
-    setCustomTip('');
-    calculateFinalAmount(totalPrice, value !== 'custom' ? value : '', '');
+    setCustomTip("");
+    calculateFinalAmount(totalPrice, value !== "custom" ? value : "", "");
   };
 
+  // const handleCustomTipChange = (e: any) => {
+  //   const value = e.target.value;
+  //   setCustomTip(value);
+  //   calculateFinalAmount(totalPrice, "custom", value);
+  // };
+
   const handleCustomTipChange = (e: any) => {
-    const value = e.target.value;
-    setCustomTip(value);
-    calculateFinalAmount(totalPrice, 'custom', value);
+    // const value = e.target.value;
+    // setCustomTip(value);
+    // calculateFinalAmount(totalPrice, "custom", value);
+
+    const value = e.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+
+    if (value.length <= 4) {
+      setCustomTip(value);
+      setIsInvalid(false);
+      calculateFinalAmount(totalPrice, "custom", value);
+    } else {
+      setIsInvalid(true);
+    }
   };
+
 
   const calculateFinalAmount = (total: any, tip: any, custom: any) => {
     if (!tip || tip === null) {
@@ -520,7 +543,10 @@ const AppointmentTable: React.FC = () => {
       return;
     }
 
-    let tipAmount = tip === 'custom' ? parseFloat(custom || 0) : (total * parseFloat(tip)) / 100;
+    let tipAmount =
+      tip === "custom"
+        ? parseFloat(custom || 0)
+        : (total * parseFloat(tip)) / 100;
     setTipAmount(tipAmount);
     setFinalAmount(total + tipAmount);
   };
@@ -580,7 +606,7 @@ const AppointmentTable: React.FC = () => {
           ...values,
           mobile_number: indianMobileNumber, // Replace the original mobile number with the Indian format
           payment_mode: "Pay_In_Person",
-          tip: tipAmount
+          tip: tipAmount,
         };
         console.log("Submitted values:", processedValues);
         const response = await createAppointment(processedValues);
@@ -591,7 +617,7 @@ const AppointmentTable: React.FC = () => {
         setFinalAmount(0);
         setTipPercentage(null);
         setTipAmount(0);
-        setCustomTip('');
+        setCustomTip("");
         toggle(); // Close the form/modal
       } catch (error: any) {
         // Error handling
@@ -710,18 +736,27 @@ const AppointmentTable: React.FC = () => {
         enableColumnFilter: false,
         cell: ({ row }: { row: { original: { Barber: any } } }) => {
           const date = new Date(); // Current date and time
-          const options: Intl.DateTimeFormatOptions = { weekday: 'long' };
-          const dayName = date.toLocaleDateString('en-US', options);
-          const scheduleArray = Object.keys(row.original.Barber?.weekly_schedule).map((day: any) => ({
+          const options: Intl.DateTimeFormatOptions = { weekday: "long" };
+          const dayName = date.toLocaleDateString("en-US", options);
+          const scheduleArray = Object.keys(
+            row.original.Barber?.weekly_schedule
+          ).map((day: any) => ({
             day,
             startTime: row.original.Barber.weekly_schedule[day].start_time,
-            endTime: row.original.Barber.weekly_schedule[day].end_time
+            endTime: row.original.Barber.weekly_schedule[day].end_time,
           }));
-          const todayScheduleInfo = scheduleArray.find((info: any) => info.day === dayName.toLowerCase());
-          return `${todayScheduleInfo && todayScheduleInfo.startTime && todayScheduleInfo.endTime
-            ? `${formatHours(todayScheduleInfo.startTime)} to ${formatHours(todayScheduleInfo.endTime)}`
-            : "Unavailable"
-            }`; // Combine and display
+          const todayScheduleInfo = scheduleArray.find(
+            (info: any) => info.day === dayName.toLowerCase()
+          );
+          return `${
+            todayScheduleInfo &&
+            todayScheduleInfo.startTime &&
+            todayScheduleInfo.endTime
+              ? `${formatHours(todayScheduleInfo.startTime)} to ${formatHours(
+                  todayScheduleInfo.endTime
+                )}`
+              : "Unavailable"
+          }`; // Combine and display
         },
       },
       {
@@ -782,7 +817,11 @@ const AppointmentTable: React.FC = () => {
     }
   };
 
-  const getBarberScheduleData = async (barberId: any, serviceTime: any, services?: any) => {
+  const getBarberScheduleData = async (
+    barberId: any,
+    serviceTime: any,
+    services?: any
+  ) => {
     if (barberId && serviceTime) {
       const obj = {
         BarberId: barberId,
@@ -800,21 +839,32 @@ const AppointmentTable: React.FC = () => {
                   (serv: any) => serv.id === parseInt(service.value)
                 );
 
-                const price = barberService ? parseFloat(barberService?.barber_price) ?? parseFloat(barberService?.min_price) ?? 0 : parseFloat(service.min_price);
+                const price = barberService
+                  ? parseFloat(barberService?.barber_price) ??
+                    parseFloat(barberService?.min_price) ??
+                    0
+                  : parseFloat(service.min_price);
 
                 return acc + price;
               }, 0);
               total = totalPrice;
             } else {
-              const totalPrice = selectedOptions.reduce((acc: any, service: any) => {
-                const barberService = selectedBarber.servicesWithPrices.find(
-                  (serv: any) => serv.id === parseInt(service.value)
-                );
+              const totalPrice = selectedOptions.reduce(
+                (acc: any, service: any) => {
+                  const barberService = selectedBarber.servicesWithPrices.find(
+                    (serv: any) => serv.id === parseInt(service.value)
+                  );
 
-                const price = barberService ? parseFloat(barberService?.barber_price) ?? parseFloat(barberService?.min_price) ?? 0 : parseFloat(service.min_price);
+                  const price = barberService
+                    ? parseFloat(barberService?.barber_price) ??
+                      parseFloat(barberService?.min_price) ??
+                      0
+                    : parseFloat(service.min_price);
 
-                return acc + price;
-              }, 0);
+                  return acc + price;
+                },
+                0
+              );
               total = totalPrice;
             }
             // price = barberService.barber_price ? barberService.barber_price : barberService.min_price ? barberService.min_price : 0;
@@ -1075,12 +1125,18 @@ const AppointmentTable: React.FC = () => {
                         <option
                           key={barber?.id}
                           value={barber?.id}
-                          disabled={barber.availability_status !== "available" || (!barber.start_time && !barber.end_time)}
+                          disabled={
+                            barber.availability_status !== "available" ||
+                            (!barber.start_time && !barber.end_time)
+                          }
                         >
-                          {`${barber.name} - (${barber.start_time && barber.end_time
-                            ? `${formatHours(barber.start_time)} to ${formatHours(barber.end_time)}`
-                            : "Unavailable"
-                            })`}
+                          {`${barber.name} - (${
+                            barber.start_time && barber.end_time
+                              ? `${formatHours(
+                                  barber.start_time
+                                )} to ${formatHours(barber.end_time)}`
+                              : "Unavailable"
+                          })`}
                         </option>
                       ))}
                     </select>
@@ -1240,21 +1296,27 @@ const AppointmentTable: React.FC = () => {
               <Col lg={12}>
                 <Label className="form-label me-1">Tip</Label>
                 <div className="btn-group">
-                   <Label className={`btn btn-outline-primary ${tipPercentage === 0 ? 'active' : ''}`}>
-                        <Input
-                          type="radio"
-                          name="tip"
-                          value={0}
-                          checked={tipPercentage === 0}
-                          onChange={handleTipChange}
-                          className="d-none"
-                        />
-                        None
-                      </Label>
-                  {[20, 25, 30,40].map((percentage) => (
+                  <Label
+                    className={`btn btn-outline-primary ${
+                      tipPercentage === 0 ? "active" : ""
+                    }`}
+                  >
+                    <Input
+                      type="radio"
+                      name="tip"
+                      value={0}
+                      checked={tipPercentage === 0}
+                      onChange={handleTipChange}
+                      className="d-none"
+                    />
+                    None
+                  </Label>
+                  {[20, 25, 30, 40].map((percentage) => (
                     <Label
                       key={percentage}
-                      className={`btn btn-outline-primary ${tipPercentage == percentage ? 'active' : ''}`}
+                      className={`btn btn-outline-primary ${
+                        tipPercentage == percentage ? "active" : ""
+                      }`}
                     >
                       <Input
                         type="radio"
@@ -1267,12 +1329,16 @@ const AppointmentTable: React.FC = () => {
                       {percentage}%
                     </Label>
                   ))}
-                  <Label className={`btn btn-outline-primary ${tipPercentage === 'custom' ? 'active' : ''}`}>
+                  <Label
+                    className={`btn btn-outline-primary ${
+                      tipPercentage === "custom" ? "active" : ""
+                    }`}
+                  >
                     <Input
                       type="radio"
                       name="tip"
                       value="custom"
-                      checked={tipPercentage === 'custom'}
+                      checked={tipPercentage === "custom"}
                       onChange={handleTipChange}
                       className="d-none"
                     />
@@ -1280,7 +1346,7 @@ const AppointmentTable: React.FC = () => {
                   </Label>
                 </div>
 
-                {tipPercentage === 'custom' && (
+                {/* {tipPercentage === 'custom' && (
                   <Input
                     type="number"
                     placeholder="Enter custom tip"
@@ -1288,10 +1354,27 @@ const AppointmentTable: React.FC = () => {
                     onChange={handleCustomTipChange}
                     className="mt-2"
                   />
+                )} */}
+
+                {tipPercentage === "custom" && (
+                  <Input
+                    type="text"
+                    placeholder="Enter custom tip"
+                    value={customTip}
+                    onChange={handleCustomTipChange}
+                    className="mt-2"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={4}
+                    invalid={isInvalid}
+                  />
                 )}
               </Col>
 
-              <Col lg={12} className="d-flex justify-content-between align-item-center">
+              <Col
+                lg={12}
+                className="d-flex justify-content-between align-item-center"
+              >
                 <h5>Total: ${totalPrice.toFixed(2)}</h5>
                 <h5>Final Amount: ${finalAmount.toFixed(2)}</h5>
               </Col>
@@ -1373,8 +1456,8 @@ const AppointmentTable: React.FC = () => {
                   price = barberService.barber_price
                     ? barberService.barber_price
                     : barberService.min_price
-                      ? barberService.min_price
-                      : 0;
+                    ? barberService.min_price
+                    : 0;
                 }
                 return (
                   <li key={index}>

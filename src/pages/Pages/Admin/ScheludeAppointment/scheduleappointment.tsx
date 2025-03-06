@@ -102,6 +102,8 @@ const Scheduleappointment = () => {
   const [selectedSlot, setSelectedSlot] = useState<any | null>(null);
   const [tipPercentage, setTipPercentage] = useState(null);
   const [customTip, setCustomTip] = useState("");
+  const [isInvalid, setIsInvalid] = useState(false);
+  
   const [totalPrice, setTotalPrice] = useState(0);
   const [finalAmount, setFinalAmount] = useState(0);
   const [tipAmount, setTipAmount] = useState(0);
@@ -655,10 +657,26 @@ const Scheduleappointment = () => {
     calculateFinalAmount(totalPrice, value !== "custom" ? value : "", "");
   };
 
+  // const handleCustomTipChange = (e: any) => {
+  //   const value = e.target.value;
+  //   setCustomTip(value);
+  //   calculateFinalAmount(totalPrice, "custom", value);
+  // };
+
   const handleCustomTipChange = (e: any) => {
-    const value = e.target.value;
-    setCustomTip(value);
-    calculateFinalAmount(totalPrice, "custom", value);
+    // const value = e.target.value;
+    // setCustomTip(value);
+    // calculateFinalAmount(totalPrice, "custom", value);
+
+    const value = e.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+
+    if (value.length <= 4) {
+      setCustomTip(value);
+      setIsInvalid(false);
+      calculateFinalAmount(totalPrice, "custom", value);
+    } else {
+      setIsInvalid(true);
+    }
   };
 
   const calculateFinalAmount = (total: any, tip: any, custom: any) => {
@@ -2147,7 +2165,7 @@ const Scheduleappointment = () => {
                                   </div>
 
                                   {/* Custom Tip Input Field */}
-                                  {tipPercentage === "custom" && (
+                                  {/* {tipPercentage === "custom" && (
                                     <Input
                                       type="number"
                                       placeholder="Enter custom tip"
@@ -2155,7 +2173,22 @@ const Scheduleappointment = () => {
                                       onChange={handleCustomTipChange}
                                       className="mt-2 form-control"
                                     />
-                                  )}
+                                  )} */}
+
+                                   {tipPercentage === "custom" && (
+                                                    <Input
+                                                      type="text"
+                                                      placeholder="Enter custom tip"
+                                                      value={customTip}
+                                                      onChange={handleCustomTipChange}
+                                                      className="mt-2"
+                                                      inputMode="numeric"
+                                                      pattern="[0-9]*"
+                                                      maxLength={4}
+                                                      invalid={isInvalid}
+                                                    />
+                                                  )}
+                                                
                                 </Col>
 
                                 {/* Total and Final Amount */}
