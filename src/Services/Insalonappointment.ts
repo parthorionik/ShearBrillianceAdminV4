@@ -29,7 +29,7 @@ export const generateSalesReport = async (
     barberId?: string
   ): Promise<any> => {
     try {
-        debugger
+        
       // Construct query parameters dynamically
       let queryParams = `?startDate=${startDate}&endDate=${endDate}`;
   
