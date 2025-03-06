@@ -6,7 +6,9 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "flatpickr/dist/themes/material_blue.css"; // Flatpickr theme
 import Loader from "Components/Common/Loader";
-import { generateSalesreport } from "Services/Insalonappointment";
+import { generateSalesReport } from "Services/Insalonappointment";
+import { fetchBarberBySalon } from "Services/barberService";
+import { fetchSalons } from "Services/SalonService";
 
 const Salesrevenue = () => {
   const [userRole, setUserRole] = useState<any>();
@@ -15,7 +17,10 @@ const Salesrevenue = () => {
   const [showLoader, setShowLoader] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
-
+ const [salonData, setSalonData] = useState<any[]>([]); // List of all barbers
+  const [salonBarberData, setSalonBarberData] = useState<any[]>([]); // Barbers filtered by selected salon
+  const [selectedSalonId, setSelectedSalonId] = useState<any | null>(null); // Selected salon
+  const [selectedBarberId, setSelectedBarberId] = useState<any | null>(null); // Selected barber
   useEffect(() => {
     const authUser = localStorage.getItem("authUser");
     if (authUser) {
@@ -27,28 +32,35 @@ const Salesrevenue = () => {
   const applyDateFilter = async () => {
     setShowSpinner(true);
     setShowLoader(true);
+    
     try {
-      const response = await generateSalesreport(formatDate(selectedStartDate), formatDate(selectedEndDate));
-      if (response) {
-        const downloadLink = response.downloadUrl;
+      debugger
+      const response = await generateSalesReport(
+        formatDate(selectedStartDate),
+        formatDate(selectedEndDate),
+        selectedSalonId || undefined, // Pass salonId if selected, else undefined
+        selectedBarberId || undefined // Pass barberId if selected, else undefined
+      );
+  
+      if (response && response.downloadUrl) {
         toast.success("PDF sales report generated successfully!");
-        window.open(downloadLink, "_blank");
+        window.open(response.downloadUrl, "_blank");
       } else {
         toast.error("Failed to generate PDF report.");
       }
     } catch (error: any) {
-      if (error.response && error.response.data) {
-        const apiMessage = error.response.data.message;
-        toast.error(apiMessage || "An error occurred");
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
       } else {
         toast.error(error.message || "Something went wrong");
       }
     } finally {
       setShowSpinner(false);
       setShowLoader(false);
+      setShowDatePicker(false);
     }
-    setShowDatePicker(false);
   };
+  
   const showToast = (message: string) => {
     toast.warning(message); // Display warning toast message
   };
@@ -64,7 +76,109 @@ const Salesrevenue = () => {
     const day = String(date.getUTCDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
+//  const userRole = localStorage.getItem("userRole");
+//   let storeRoleInfo: any;
+//   if (userRole) {
+//     storeRoleInfo = JSON.parse(userRole);
+//   }
+ useEffect(() => {
+    const fetchAllData = async () => {
 
+      try {
+        debugger
+        // Fetch both salons and barbers data in parallel
+        const [salonsResponse] = await Promise.all([
+          fetchSalons(1, null, null),
+        ]);
+        // Set the fetched data to the respective states
+        setSalonData(salonsResponse?.salons || []);
+      } catch (error: any) {
+        // Check if the error has a response property (Axios errors usually have this)
+        if (error.response && error.response.data) {
+          const apiMessage = error.response.data.message; // Extract the message from the response
+          toast.error(apiMessage || "An error occurred"); // Show the error message in a toaster
+        } else {
+          // Fallback for other types of errors
+          toast.error(error.message || "Something went wrong");
+        }
+      }
+    };
+
+    fetchAllData();
+  }, []);
+
+ const getSalonBabrer = async (salonId: any) => {
+  debugger
+    try {
+      debugger
+      // Fetch barbers for the selected salon
+      const barberResponse = await fetchBarberBySalon(salonId);
+      // Check if the barberResponse itself has data or is not empty
+      if (barberResponse && barberResponse.length > 0) {
+        const barbers = barberResponse; // Assuming the response is directly the list of barbers
+        setSalonBarberData(barbers); // Update barber data
+      } else {
+        setSalonBarberData([]); // No barbers found, clear barber data
+      }
+    } catch (error: any) {
+      // Check if the error has a response property (Axios errors usually have this)
+      if (error.response && error.response.data) {
+        const apiMessage = error.response.data.message; // Extract the message from the response
+        toast.error(apiMessage || "An error occurred"); // Show the error message in a toaster
+      } else {
+        // Fallback for other types of errors
+        toast.error(error.message || "Something went wrong");
+      }
+      setSalonBarberData([]); // Clear barber data in case of error
+    }
+  }
+  let storeUserInfo: any;
+  const authUSer: any = localStorage.getItem("authUser");
+  if (authUSer) {
+    storeUserInfo = JSON.parse(authUSer);
+  }
+  useEffect(() => {
+    if (storeUserInfo.berber) {
+      setSelectedSalonId(storeUserInfo.berber.SalonId);
+      setSelectedBarberId(storeUserInfo.berber.id);
+      // setTimeout(() => {
+      //   applyDateFilter(
+      //     storeUserInfo.berber.SalonId,
+      //     storeUserInfo.berber.id
+      //   );
+      // }, 500);
+    }
+    if (storeUserInfo.salon) {
+      setSelectedSalonId(storeUserInfo.salon.id);
+      getSalonBabrer(storeUserInfo.salon.id);
+    }
+  }, []);
+  
+    const handleSalonChange = async (
+      event: React.ChangeEvent<HTMLSelectElement>
+    ) => {
+      debugger
+  
+      const salonId = event.target.value ? Number(event.target.value) : null;
+      setSelectedSalonId(salonId);
+      if (salonId !== null) {
+        getSalonBabrer(salonId);
+      } else {
+        setSalonBarberData([]); // Clear barbers if no salon is selected
+      }
+  
+      // Clear selected barber when salon changes
+      setSelectedBarberId(null);
+    };
+    // Handle barber change
+    const handleBarberChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      debugger
+      const barberId = event.target.value ? Number(event.target.value) : null;
+      setSelectedBarberId(barberId);
+      if (!selectedSalonId) {
+        alert("Please select a salon first.");
+      }
+    };
   return (
     <React.Fragment>
       <Row className="mb-3 pb-1">
@@ -92,52 +206,114 @@ const Salesrevenue = () => {
           </div>
 
           {showDatePicker && (
-            <div className="d-flex align-items-center mt-3">
-              <Flatpickr
-                className="form-control me-2 w-25"
-                value={selectedStartDate}
-                onChange={(dates: any) => setStartDate(dates[0])}
-                options={{ dateFormat: "Y-m-d",
-                  maxDate: new Date(), // Prevents future dates
-                 }}
-                placeholder="Select Start Date"
-              />
-
-              <Flatpickr
-                className="form-control me-2 w-25"
-                value={selectedEndDate}
-                onChange={(dates: any) => {
-                  const selectedEnd = dates[0];
-
-                  if (selectedEnd && selectedEnd < selectedStartDate) {
-                    showToast("End Date cannot be before Start Date!"); // Show toast message
-                    return; // Prevent setting the End Date if invalid
-                  }
-
-                  setEndDate(selectedEnd); // Update End Date if valid
-                }}
-                options={{
-                  dateFormat: "Y-m-d",
-                  minDate: selectedStartDate, // Set min date for End Date to Start Date
-                  maxDate: new Date(), // Prevents selecting future dates
-                }}
-                placeholder="Select End Date"
-              />
-              <button
-                type="button"
-                className="btn btn-primary d-flex align-items-center"
-                onClick={applyDateFilter}
-                disabled={showSpinner}
-              >
-                {showSpinner && (
-                  <Spinner size="sm" className="me-2">
-                    Loading...
-                  </Spinner>
-                )}
-                Apply
-              </button>
-            </div>
+  <div className="row align-items-center mt-3 g-2">
+    {/* Salon Dropdown */}
+    {!storeUserInfo.berber && !storeUserInfo.salon && (
+      <div className="col-lg-3 col-md-6 col-sm-6">
+        <select
+          id="salonSelect"
+          className="form-select"
+          value={selectedSalonId !== null ? selectedSalonId : ""}
+          onChange={handleSalonChange}
+        >
+          <option value="" disabled>
+            Select Salon
+          </option>
+          {salonData.length > 0 ? (
+            salonData.map((salon: any) => (
+              <option key={salon.salon.id} value={salon.salon.id}>
+                {salon.salon.name}
+              </option>
+            ))
+          ) : (
+            <option value="" disabled>
+              No salons available
+            </option>
           )}
+        </select>
+      </div>
+    )}
+
+    {/* Barber Dropdown */}
+    <div className="col-lg-3 col-md-6 col-sm-6">
+      <select
+        id="barberSelect"
+        className="form-select"
+        value={selectedBarberId !== null ? selectedBarberId : ""}
+        onChange={handleBarberChange}
+        disabled={!selectedSalonId}
+      >
+        <option value="" disabled>
+          Select Barber
+        </option>
+        {salonBarberData.length > 0 ? (
+          salonBarberData.map((barber: any) => (
+            <option
+              key={barber.id}
+              value={barber.id}
+              disabled={barber.availability_status !== "available"}
+            >
+              {barber.name}
+            </option>
+          ))
+        ) : (
+          <option value="" disabled>
+            No barbers available
+          </option>
+        )}
+      </select>
+    </div>
+
+    {/* Start Date Picker */}
+    <div className="col-lg-3 col-md-6 col-sm-6">
+      <Flatpickr
+        className="form-control"
+        value={selectedStartDate}
+        onChange={(dates: any) => setStartDate(dates[0])}
+        options={{ dateFormat: "Y-m-d" ,maxDate: new Date() }}
+        placeholder="Select Start Date"
+      />
+    </div>
+
+    {/* End Date Picker + Apply Button */}
+    <div className="col-lg-3 col-md-6 col-sm-6 d-flex align-items-center gap-2">
+  <div className="flex-grow-1">
+    <Flatpickr
+      className="form-control"
+      value={selectedEndDate}
+      onChange={(dates: any) => {
+        const selectedEnd = dates[0];
+        if (selectedEnd && selectedEnd < selectedStartDate) {
+          showToast("End Date cannot be before Start Date!");
+          return;
+        }
+        setEndDate(selectedEnd);
+      }}
+      options={{
+        dateFormat: "Y-m-d",
+        minDate: selectedStartDate,
+        maxDate: new Date(),
+      }}
+      placeholder="Select End Date"
+    />
+  </div>
+
+  <button
+    type="button"
+    className="btn btn-primary"
+    onClick={applyDateFilter}
+    disabled={showSpinner}
+    style={{ whiteSpace: "nowrap" }} // Prevents button text from wrapping
+  >
+    {showSpinner && <Spinner size="sm" className="me-2">Loading...</Spinner>}
+    Apply
+  </button>
+</div>
+
+  </div>
+)}
+
+
           <ToastContainer closeButton={false} limit={1} />
         </Col>
       </Row>
