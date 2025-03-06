@@ -182,11 +182,21 @@ const RequestedLeavesTable: React.FC = () => {
   const formatDate = (dateString: any) => {
     if (!dateString) return ""; // Return an empty string if dateString is invalid
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return ""; // Return an empty string if date is invalid
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    return `${day}-${month}-${year}`;
+    // Get the user's current timezone
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      timeZone: userTimeZone, // Automatically adapts to the user's location
+    };
+
+    // Get formatted date
+    const formattedDate = new Intl.DateTimeFormat('en-CA', options).format(date); // en-CA ensures YYYY-MM-DD format
+
+    // Replace slashes with dashes to ensure YYYY-MM-DD format
+    return formattedDate.replace(/\//g, '-');
   };
   const handleStatusChange = (event: any) => {
     setStatus(event.target.value); // Apply the selected status locally
