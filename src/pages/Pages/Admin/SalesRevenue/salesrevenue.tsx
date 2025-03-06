@@ -34,7 +34,7 @@ const Salesrevenue = () => {
     setShowLoader(true);
     
     try {
-      debugger
+      
       const response = await generateSalesReport(
         formatDate(selectedStartDate),
         formatDate(selectedEndDate),
@@ -85,7 +85,6 @@ const Salesrevenue = () => {
     const fetchAllData = async () => {
 
       try {
-        debugger
         // Fetch both salons and barbers data in parallel
         const [salonsResponse] = await Promise.all([
           fetchSalons(1, null, null),
@@ -108,9 +107,8 @@ const Salesrevenue = () => {
   }, []);
 
  const getSalonBabrer = async (salonId: any) => {
-  debugger
     try {
-      debugger
+      
       // Fetch barbers for the selected salon
       const barberResponse = await fetchBarberBySalon(salonId);
       // Check if the barberResponse itself has data or is not empty
@@ -157,7 +155,7 @@ const Salesrevenue = () => {
     const handleSalonChange = async (
       event: React.ChangeEvent<HTMLSelectElement>
     ) => {
-      debugger
+      
   
       const salonId = event.target.value ? Number(event.target.value) : null;
       setSelectedSalonId(salonId);
@@ -172,7 +170,7 @@ const Salesrevenue = () => {
     };
     // Handle barber change
     const handleBarberChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      debugger
+      
       const barberId = event.target.value ? Number(event.target.value) : null;
       setSelectedBarberId(barberId);
       if (!selectedSalonId) {

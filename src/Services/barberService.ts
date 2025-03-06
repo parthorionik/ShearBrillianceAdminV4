@@ -113,7 +113,7 @@ export const deleteBarber = async (id: number): Promise<void> => {
 
 export const fetchBarberBySalon = async (salonId: any, category = 1): Promise<any> => {
   try {
-    debugger
+    
     const response = await apiClient.get(`${BARBER_ENDPOINT}`, {
       params: { salonId, category }, // Update to match the query parameters in the URL
     });
