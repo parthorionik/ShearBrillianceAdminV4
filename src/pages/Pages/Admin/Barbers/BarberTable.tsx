@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Modal,
   ModalBody,
@@ -106,7 +106,10 @@ const BarberTable: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<any | null>(null);
   const [selectedPositionOption, setSelectedPositionOption] = useState<any | null>(null);
   const [passwordShow, setPasswordShow] = useState(false);
-
+  const selectedSalonOpenTimeRef = useRef<any>(null);
+  const selectedSalonCloseTimeRef = useRef<any>(null);
+  const selectedSalonOpenTimeAMPMRef = useRef<any>(null);
+  const selectedSalonCloseTimeAMPMRef = useRef<any>(null);
   const [isEditing, setIsEditing] = useState(false); // Track if we are editing
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
   const [showLoader, setShowLoader] = useState(true);
@@ -161,16 +164,16 @@ const BarberTable: React.FC = () => {
   }
 
   useEffect(() => {
+    if (storeRoleInfo.role_name === "Salon Manager" || storeRoleInfo.role_name === "Salon Owner") {
+      setSelectedSalonId(storeUserInfo.salon.id);
+      formik.setFieldValue("SalonId", storeUserInfo?.salon.id);
+    }
     const fetchSalonsList = async () => {
       try {
         const response: any = await fetchSalons(1, null, null);
         setSalonData(response?.salons);
 
         fetchBarbersList(selectedCurrentPage ? selectedCurrentPage + 1 : 1, null);
-        if (storeRoleInfo.role_name === "Salon Manager" || storeRoleInfo.role_name === "Salon Owner") {
-          setSelectedSalonId(storeUserInfo.salon.id);
-          formik.setFieldValue("SalonId", storeUserInfo.salon.id);
-        }
       } catch (error: any) {
         // Check if the error has a response property (Axios errors usually have this)
         if (error.response && error.response.data) {
@@ -1060,20 +1063,42 @@ const BarberTable: React.FC = () => {
 
   const handleAddButtonClick = () => {
     setNewBarber(null);
-    setModal(true);
+    setSchedule(daysOfWeek.map(day => ({ day, isChecked: false, startTime: '', endTime: '', isReadonly: false })));
     const initialBarberServices = serviceData.map((service: any) => ({
       ServiceId: service.id,
       price: null,
       isChecked: false,
     }));
     setBarberServices(initialBarberServices);
-    setSchedule(daysOfWeek.map(day => ({ day, isChecked: false, startTime: '', endTime: '', isReadonly: false })));
     setSalonOpenTime(null);
     setSalonCloseTime(null);
     setSalonOpenTimeAMPM(null);
     setSalonCloseTimeAMPM(null);
+    setSalonInformation();
+    setModal(true);
   };
 
+  const setSalonInformation = () => {
+    if (storeRoleInfo.role_name === "Salon Manager" || storeRoleInfo.role_name === "Salon Owner") {
+      setSelectedSalonId(storeUserInfo.salon.id);
+      formik.setFieldValue("SalonId", storeUserInfo?.salon.id);
+      const openTime: any = storeUserInfo ? parseTime(storeUserInfo.salon.open_time) : null;
+      const closeTime: any = storeUserInfo ? parseTime(storeUserInfo.salon.close_time) : null;
+      selectedSalonOpenTimeRef.current = openTime;
+      selectedSalonCloseTimeRef.current = closeTime;
+      selectedSalonOpenTimeAMPMRef.current = storeUserInfo.salon ? formatTime(storeUserInfo.salon.open_time) : null;
+      selectedSalonCloseTimeAMPMRef.current = storeUserInfo.salon ? formatTime(storeUserInfo.salon.close_time) : null;
+      setSalonOpenTime(openTime);
+      setSalonCloseTime(closeTime);
+      setSalonOpenTimeAMPM(selectedSalonOpenTimeAMPMRef.current);
+      setSalonCloseTimeAMPM(selectedSalonCloseTimeAMPMRef.current);
+      let updatedSchedule = [...schedule];
+      updatedSchedule = schedule.map(item => {
+        return { ...item, isChecked: true, startTime: openTime, endTime: closeTime, isReadonly: false };
+      });
+      setSchedule(updatedSchedule);
+    }
+  }
   const toggleDeleteModal = () => {
     setDeleteModal(!deleteModal); // Toggle the delete modal visibility
   };
@@ -1685,52 +1710,77 @@ const BarberTable: React.FC = () => {
             </Row>
             <Row className="mt-4">
               <Col xs={12}>
-                <h5 className="text-center">Weekly Schedule <span className="text-success"> (Salon time: {selectedSalonOpenTimeAMPM} - {selectedSalonCloseTimeAMPM})</span></h5>
+                <h5 className="text-center">Weekly Schedule <span className="text-success"> (Salon time: {selectedSalonOpenTimeAMPMRef.current ? selectedSalonOpenTimeAMPMRef.current : selectedSalonOpenTimeAMPM} - {selectedSalonCloseTimeAMPMRef.current ? selectedSalonCloseTimeAMPMRef.current : selectedSalonCloseTimeAMPM})</span></h5>
               </Col>
               {schedule.map((dayItem, index) => (
-                <Col lg={3} md={4} sm={6} xs={12} key={dayItem.day} className="mb-4">
-                  <div className="d-flex flex-column align-items-start p-3 border rounded shadow-sm">
-                    <div className="d-flex justify-content-between w-100">
-                      <div className="d-flex align-items-center">
-                        <Input
-                          type="checkbox"
-                          checked={dayItem.isChecked}
-                          disabled={dayItem.isReadonly}
-                          onChange={() => handleWeekCheckboxChange(index)}
-                        />
-                        <Label className="ms-2 mb-0">{dayItem.day}</Label>
+                  <Col lg={3} md={4} sm={6} xs={12} key={dayItem.day} className="mb-4">
+                    <div className="d-flex flex-column align-items-start p-3 border rounded shadow-sm">
+                      <div className="d-flex justify-content-between w-100">
+                        <div className="d-flex align-items-center">
+                          <Input
+                            type="checkbox"
+                            checked={dayItem.isChecked}
+                            disabled={dayItem.isReadonly}
+                            onChange={() => handleWeekCheckboxChange(index)}
+                          />
+                          <Label className="ms-2 mb-0">{dayItem.day}</Label>
+                        </div>
                       </div>
+                      {dayItem.isChecked ? (
+                        <div className="row g-2 mt-3 w-100">
+                          <div className="col-12 col-lg-6">
+                            <Input
+                              type="time"
+                              value={dayItem.startTime}
+                              onChange={e => handleTimeChange(index, 'startTime', e.target.value)}
+                              onBlur={() => handleTimeBlur(index, 'startTime')}
+                              disabled={dayItem.isReadonly}
+                              required
+                              className="form-control form-control-sm"
+                            />
+                          </div>
+                          <div className="col-12 col-lg-6">
+                            <Input
+                              type="time"
+                              value={dayItem.endTime}
+                              onChange={e => handleTimeChange(index, 'endTime', e.target.value)}
+                              onBlur={() => handleTimeBlur(index, 'endTime')}
+                              disabled={dayItem.isReadonly}
+                              required
+                              className="form-control form-control-sm"
+                            />
+                          </div>
+                        </div>
+                        // <div className="d-flex flex-column gap-2 mt-3 w-100">
+                        //   <div className="d-flex gap-2 flex-md-wrap flex-sm-wrap flex-lg-nowrap flex-xl-nowrap flex-xxl-nowrap w-100">
+                        //     <Input
+                        //       type="time"
+                        //       value={dayItem.startTime}
+                        //       onChange={e => handleTimeChange(index, 'startTime', e.target.value)}
+                        //       onBlur={() => handleTimeBlur(index, 'startTime')}
+                        //       disabled={dayItem.isReadonly}
+                        //       required
+                        //       className="form-control form-control-sm flex-grow-1"
+                        //     />
+                        //     <Input
+                        //       type="time"
+                        //       value={dayItem.endTime}
+                        //       onChange={e => handleTimeChange(index, 'endTime', e.target.value)}
+                        //       onBlur={() => handleTimeBlur(index, 'endTime')}
+                        //       disabled={dayItem.isReadonly}
+                        //       required
+                        //       className="form-control form-control-sm flex-grow-1"
+                        //     />
+                        //   </div>
+                        // </div>
+
+                      ) : (
+                        <p className="text-muted text-center mb-0 mt-2">Unavailable</p>
+                      )}
                     </div>
-                    {dayItem.isChecked ? (
-                      <div className="d-flex flex-column gap-2 mt-3 w-100">
-                      <div className="d-flex gap-2 flex-wrap w-100">
-                        <Input
-                          type="time"
-                          value={dayItem.startTime}
-                          onChange={e => handleTimeChange(index, 'startTime', e.target.value)}
-                          onBlur={() => handleTimeBlur(index, 'startTime')}
-                          disabled={dayItem.isReadonly}
-                          required
-                          className="form-control form-control-sm flex-grow-1"
-                        />
-                        <Input
-                          type="time"
-                          value={dayItem.endTime}
-                          onChange={e => handleTimeChange(index, 'endTime', e.target.value)}
-                          onBlur={() => handleTimeBlur(index, 'endTime')}
-                          disabled={dayItem.isReadonly}
-                          required
-                          className="form-control form-control-sm flex-grow-1"
-                        />
-                      </div>
-                    </div>
-                    
-                    ) : (
-                      <p className="text-muted text-center mb-0 mt-2">Unavailable</p>
-                    )}
-                  </div>
-                </Col>
-              ))}
+                  </Col>
+                )
+              )}
             </Row>
             <div className="mt-4">
               <h5>Assign Services</h5>
