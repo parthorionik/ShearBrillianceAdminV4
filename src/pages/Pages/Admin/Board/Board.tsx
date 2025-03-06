@@ -563,7 +563,6 @@ const Board = () => {
   }, [token, activeFilterBarber]); // Only depend on id and token
 
   const fetchAppointments = async () => {
-    debugger
     try {
       setShowLoader(true);
       setActiveFilter("All");

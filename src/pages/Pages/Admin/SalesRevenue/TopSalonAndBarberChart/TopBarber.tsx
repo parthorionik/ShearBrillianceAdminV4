@@ -1,96 +1,75 @@
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "../../../../../Components/Common/ChartsDynamicColor";
-import { APIClient } from "../../../../../Services/api_helper"; // Adjust the path
+import { fetchTopBarber } from "Services/Sales"; // Import API method
 import { toast, ToastContainer } from "react-toastify";
 
-const apiClient = new APIClient();
-
 const TopBarber = ({ dataColors }: any) => {
-  const [topServices, setTopServices] = useState<any[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [barberData, setBarberData] = useState<{ names: string[]; counts: number[] }>({
+    names: [],
+    counts: [],
+  });
 
   useEffect(() => {
-    // Fetch API data on component mount
-    const fetchTopServices = async () => {
+    const getTopBarbers = async () => {
       try {
-        const response: any = await apiClient.get("sales/gettopService");
-
-        // Ensure the response has the correct structure
-        if (response) {
-          setTopServices(response); // Update state with the 'data' from API response
-        }
-      } catch (error: any) {
-        // Check if the error has a response property (Axios errors usually have this)
-        if (error.response && error.response.data) {
-          const apiMessage = error.response.data.message; // Extract the message from the response
-          toast.error(apiMessage || "An error occurred"); // Show the error message in a toaster
+        const topBarbers = await fetchTopBarber(); // Call the imported function
+        if (topBarbers.length > 0) {
+          const names = topBarbers.map((barber: any) => barber.barberName);
+          const counts = topBarbers.map((barber: any) => barber.appointmentsCount);
+          setBarberData({ names, counts });
         } else {
-          // Fallback for other types of errors
-          toast.error(error.message || "Something went wrong");
+          toast.error("No top barbers found");
         }
-        setError(error);
+      } catch (error) {
+        toast.error("Error fetching top barbers");
       }
     };
 
-    fetchTopServices();
+    getTopBarbers();
   }, []);
 
-  const BasicColors = getChartColorsArray(dataColors);
+  const chartColumnDistributedColors = getChartColorsArray(dataColors);
 
-  // Ensure topServices is not empty before trying to map over it
-  const appointment = [
-    {
-      data: topServices.map((service: any) => parseInt(service.usageCount)), // Use usageCount for data
-    },
-  ];
+  const series = [{ data: barberData.counts }];
 
   const options: any = {
     chart: {
-      toolbar: {
-        show: !1,
+      height: 350,
+      type: "bar",
+      events: {
+        click: function (chart: any, w: any, e: any) {},
       },
     },
+    colors: chartColumnDistributedColors,
     plotOptions: {
       bar: {
-        horizontal: !0,
+        columnWidth: "45%",
+        distributed: true,
       },
     },
     dataLabels: {
-      enabled: !1,
+      enabled: false,
     },
-    colors: BasicColors,
-    grid: {
-      borderColor: "#f1f1f1",
+    legend: {
+      show: false,
     },
     xaxis: {
-      categories: topServices.map((service: any) => service.serviceName), // Use serviceName for categories
+      categories: barberData.names,
+      labels: {
+        style: {
+          colors: ["#038edc", "#51d28c", "#f7cc53", "#f34e4e", "#564ab1", "#5fd0f3"],
+          fontSize: "12px",
+        },
+      },
     },
   };
 
   return (
-    <React.Fragment>
-      {error ? (
-        <p>Error: {error}</p>
-      ) : (
-        <>
-          <ReactApexChart
-            dir="ltr"
-            className="apex-charts"
-            options={options}
-            series={appointment}
-            type="bar"
-            height={350}
-          />
-          {/* <div>
-            <h4>API Data:</h4>
-            <pre>{JSON.stringify(topServices, null, 2)}</pre>
-          </div> */}
-        </>
-      )}
-      
-      <ToastContainer closeButton={false} limit={1} />
-    </React.Fragment>
+    <>
+      <ToastContainer />
+      <ReactApexChart dir="ltr" className="apex-charts" series={series} options={options} type="bar" height={350} />
+    </>
   );
 };
 

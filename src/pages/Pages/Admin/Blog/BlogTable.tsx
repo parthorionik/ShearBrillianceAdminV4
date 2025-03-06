@@ -137,8 +137,7 @@ const BlogTable: React.FC = () => {
 
   const columns = useMemo(
     () => [
-      {
-
+      { 
         header: "Blogs",
         accessorKey: "image",
         enableColumnFilter: false,
@@ -172,11 +171,21 @@ const BlogTable: React.FC = () => {
         header: "Title",
         accessorKey: "title",
         enableColumnFilter: false,
+        cell: (cell: { row: { original: Blog } }) => (
+          <span title={cell.row.original.title}>
+            {cell.row.original.title?.length > 30 ? cell.row.original.title?.substring(0, 30) + "..." : cell.row.original.title}
+          </span>
+        ),
       },
       {
         header: "Description",
         accessorKey: "description",
         enableColumnFilter: false,
+        cell: (cell: { row: { original: Blog } }) => (
+          <span title={cell.row.original.description}>
+            {cell.row.original.description?.split(" ")?.slice(0, 20).join(" ") + "..."}
+          </span>
+        ),
       },
       {
         header: "Actions",

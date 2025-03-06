@@ -15,7 +15,6 @@ const CustomerMixedChart = ({ dataColors }: any) => {
 
   // Function to process API data into chart format
   const mapApiResponseToChartData = (data: any) => {
-    debugger
     if (!data || typeof data !== "object") return { months: [], newCustomers: [], repeatedCustomers: [], totalCustomers: [] };
   
     const months = Object.keys(data) ?? []; // Ensure months is always an array
@@ -27,7 +26,6 @@ const CustomerMixedChart = ({ dataColors }: any) => {
   };
   
   const fetchData = async (filter: string) => {
-    debugger
     setLoading(true);
     try {
       const response = await fetchCustomerYearlyStatus(filter);
