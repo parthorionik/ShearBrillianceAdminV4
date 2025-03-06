@@ -62,9 +62,20 @@ export const fetchSalesPaymentData = async (filter: string): Promise<any> => {
   }
 };
 
-// Fetch top services data
-export const fetchTopBarber = async (): Promise<any> => {
+export const fetchTopSalon= async (): Promise<any> => {
   try {
+ 
+    const response = await apiClient.get(`${SALES_ENDPOINT}/gettopSalon`);
+    return response; // Return the response directly or response.data as needed
+  } catch (error) {
+    console.error("Error fetching top services:", error);
+    throw error; // Rethrow the error for the calling function to handle
+  }
+};
+
+export const fetchTopBarber= async (): Promise<any> => {
+  try {
+ 
     const response = await apiClient.get(`${SALES_ENDPOINT}/gettopBarber`);
     return response; // Return the response directly or response.data as needed
   } catch (error) {

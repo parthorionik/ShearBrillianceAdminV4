@@ -5,19 +5,29 @@ import { fetchTopBarber } from "Services/Sales"; // Import API method
 import { toast, ToastContainer } from "react-toastify";
 
 const TopBarber = ({ dataColors }: any) => {
-  const [barberData, setBarberData] = useState<{ names: string[]; counts: number[] }>({
+  const [barberData, setBarberData] = useState<{
+    names: string[];
+    counts: number[];
+    salons: string[];
+    backgroundColors: string[];
+  }>({
     names: [],
     counts: [],
+    salons: [],
+    backgroundColors: [],
   });
 
   useEffect(() => {
     const getTopBarbers = async () => {
       try {
-        const topBarbers = await fetchTopBarber(); // Call the imported function
+        const topBarbers = await fetchTopBarber(); // Call the API function
         if (topBarbers.length > 0) {
           const names = topBarbers.map((barber: any) => barber.barberName);
-          const counts = topBarbers.map((barber: any) => barber.appointmentsCount);
-          setBarberData({ names, counts });
+          const counts = topBarbers.map((barber: any) => Number(barber.appointmentsCount)); // Convert to number
+          const salons = topBarbers.map((barber: any) => barber.salonName);
+          const backgroundColors = topBarbers.map((barber: any) => barber.backgroundColor); // Get colors
+
+          setBarberData({ names, counts, salons, backgroundColors });
         } else {
           toast.error("No top barbers found");
         }
@@ -29,19 +39,24 @@ const TopBarber = ({ dataColors }: any) => {
     getTopBarbers();
   }, []);
 
-  const chartColumnDistributedColors = getChartColorsArray(dataColors);
-
-  const series = [{ data: barberData.counts }];
-
+  // 🔹 Series Data: Display Salon Name and Barber Name
+  const series = [
+    {
+      name:"Appointments",
+      data: barberData.counts.map((count, index) => ({
+        x: barberData.names[index], // Only Barber Name for X-axis
+        y: count, // Appointments Count
+        meta: barberData.salons[index], // Store Salon Name for Tooltip
+      })),
+    },
+  ];
+  
   const options: any = {
     chart: {
       height: 350,
       type: "bar",
-      events: {
-        click: function (chart: any, w: any, e: any) {},
-      },
     },
-    colors: chartColumnDistributedColors,
+    colors: barberData.backgroundColors, // Ensure colors are applied correctly
     plotOptions: {
       bar: {
         columnWidth: "45%",
@@ -55,15 +70,23 @@ const TopBarber = ({ dataColors }: any) => {
       show: false,
     },
     xaxis: {
-      categories: barberData.names,
+      categories: barberData.names, // Show only barber names
       labels: {
         style: {
-          colors: ["#038edc", "#51d28c", "#f7cc53", "#f34e4e", "#564ab1", "#5fd0f3"],
+          colors: barberData.backgroundColors,
           fontSize: "12px",
         },
       },
     },
+    tooltip: {
+      y: {
+        formatter: function (value: any, { dataPointIndex }: any) {
+          return `${value}(${barberData.salons[dataPointIndex]})`;
+        },
+      },
+    },
   };
+  
 
   return (
     <>

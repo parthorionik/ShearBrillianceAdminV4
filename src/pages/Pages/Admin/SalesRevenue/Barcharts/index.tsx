@@ -25,7 +25,7 @@ const BarCharts = () => {
                         <Col lg={6}>
                             <Card>
                                 <CardHeader >
-                                    <h4 className="card-title mb-0">Top Performing Salon</h4>
+                                    <h4 className="card-title mb-0">Top Three Performing Salon</h4>
                                 </CardHeader>
                                 <CardBody style={{marginBottom:"30px"}}>
                                     <TopSalon dataColors='["--vz-success"]'/>
