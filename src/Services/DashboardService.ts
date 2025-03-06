@@ -58,7 +58,6 @@ export const fetchCustomerYearlyStatus = async (
   filter: string
 ): Promise<any> => {
   try {
-    debugger
     const response = await apiClient.get(
       `${DASHBOARD_ENDPOINT}/customer-yearly-status`
     );

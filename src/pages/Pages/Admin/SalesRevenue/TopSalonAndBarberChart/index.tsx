@@ -13,7 +13,7 @@ const TopCharts = () => {
                         <Col lg={6}>
                             <Card>
                                 <CardHeader >
-                                    <h4 className="card-title mb-0">Top Performing Services</h4>
+                                    <h4 className="card-title mb-0">Top Performing Barbers</h4>
                                 </CardHeader>
                                 <CardBody style={{marginBottom:"30px"}}>
                                     <TopBarber dataColors='["--vz-success"]'/>
