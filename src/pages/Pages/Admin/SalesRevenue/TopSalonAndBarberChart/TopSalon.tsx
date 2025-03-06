@@ -14,7 +14,7 @@ const TopSalon = ({ dataColors }: any) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                debugger
+                
                 const response = await fetchTopSalon();
                 if (response) {
                     const data = response;
