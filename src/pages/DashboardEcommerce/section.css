@@ -1,0 +1,18 @@
+@media (max-width: 768px) {
+    .d-flex.align-items-lg-center {
+      flex-direction: column; /* Stack elements vertically on small screens */
+    }
+  
+    .mt-3.mt-lg-0 {
+      margin-top: 1rem !important; /* Add spacing between elements on small screens */
+    }
+  
+    .form-control.me-2 {
+      margin-right: 0 !important; /* Remove margin between inputs on small screens */
+      margin-bottom: 0.5rem; /* Add spacing between inputs on small screens */
+    }
+  
+    .btn-primary {
+      width: 100%; /* Make the button take full width on small screens */
+    }
+  }
