@@ -1,131 +1,72 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "../../../../../Components/Common/ChartsDynamicColor";
-import { APIClient } from "../../../../../Services/api_helper"; // Adjust the path
+import { APIClient } from "../../../../../Services/api_helper"; 
 import { toast, ToastContainer } from "react-toastify";
+import { fetchTopSalon } from "Services/Sales";
 
 const apiClient = new APIClient();
 
-const TopSalon = ({ dataColors } : any) => {
-  var chartColumnDatatalabelColors = getChartColorsArray(dataColors);
-  const series = [
-      {
-          name: "Inflation",
-          data: [2.5, 3.2, 5.0, 10.1, 4.2, 3.8, 3, 2.4, 4.0, 1.2, 3.5, 0.8],
-      },
-  ];
+const TopSalon = ({ dataColors }: any) => {
+    const [chartData, setChartData] = useState<{ name: string; data: number[] }[]>([]);
+    const [categories, setCategories] = useState<string[]>([]);
 
-  const options :any = {
-      chart: {
-          toolbar: {
-              show: !1,
-          },
-      },
-      plotOptions: {
-          bar: {
-              dataLabels: {
-                  position: "top", // top, center, bottom
-              },
-          },
-      },
-      dataLabels: {
-          enabled: !0,
-          formatter: function (val : any) {
-              return val + "%";
-          },
-          offsetY: -20,
-          style: {
-              fontSize: "12px",
-              colors: ["#adb5bd"],
-          },
-      },
-      colors: chartColumnDatatalabelColors,
-      grid: {
-          borderColor: "#f1f1f1",
-      },
-      xaxis: {
-          categories: [
-              "Jan",
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-              "Nov",
-              "Dec",
-          ],
-          position: "top",
-          labels: {
-              offsetY: -18,
-          },
-          axisBorder: {
-              show: !1,
-          },
-          axisTicks: {
-              show: !1,
-          },
-          crosshairs: {
-              fill: {
-                  type: "gradient",
-                  gradient: {
-                      colorFrom: "#D8E3F0",
-                      colorTo: "#BED1E6",
-                      stops: [0, 100],
-                      opacityFrom: 0.4,
-                      opacityTo: 0.5,
-                  },
-              },
-          },
-          tooltip: {
-              enabled: !0,
-              offsetY: -35,
-          },
-      },
-      fill: {
-          gradient: {
-              shade: "light",
-              type: "horizontal",
-              shadeIntensity: 0.25,
-              gradientToColors: undefined,
-              inverseColors: !0,
-              opacityFrom: 1,
-              opacityTo: 1,
-              stops: [50, 0, 100, 100],
-          },
-      },
-      yaxis: {
-          axisBorder: {
-              show: !1,
-          },
-          axisTicks: {
-              show: !1,
-          },
-          labels: {
-              show: !1,
-              formatter: function (val : any) {
-                  return val + "%";
-              },
-          },
-      },
-      title: {
-          text: "Monthly Inflation in Argentina, 2002",
-          floating: !0,
-          offsetY: 320,
-          align: "center",
-          style: {
-              color: "#444",
-              fontWeight: 500,
-          },
-      },
-  };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                debugger
+                const response = await fetchTopSalon();
+                if (response) {
+                    const data = response;
 
-  return (
-      <ReactApexChart dir="ltr" className="apex-charts" series={series} options={options} type="bar" height={350} />
-  );
+                    // Extracting salon names & appointment counts
+                    const salonNames = data.map((salon: any) => salon.salonName);
+                    const appointmentCounts = data.map((salon: any) => Number(salon.appointmentsCount));
+
+                    setCategories(salonNames);
+                    setChartData([{ name: "Appointments", data: appointmentCounts }]);
+                } else {
+                    toast.error("Failed to fetch salon data");
+                }
+            } catch (error) {
+                toast.error("Error fetching salon data");
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const chartColumnDatatalabelColors = getChartColorsArray(dataColors);
+
+    const options = useMemo(() => ({
+        chart: { type: "bar", toolbar: { show: false } },
+        plotOptions: { bar: { horizontal: false, columnWidth: "50%" } },
+        // dataLabels: {
+        //     enabled: true,
+        //     formatter: (val: any) => `${val} Appointments`,
+        //     offsetY: -10,
+        //     style: { fontSize: "12px", colors: ["#fff"] },
+        // },
+        colors: chartColumnDatatalabelColors,
+        grid: { borderColor: "#04a6e9d9" },
+        xaxis: {
+            categories: categories, // ✅ This will now update properly
+            labels: { offsetY: -2 },
+            axisBorder: { show: false },
+            axisTicks: { show: false },
+        },
+        yaxis: { title: { text: "Appointments" }, labels: { formatter: (val: any) => val.toFixed(0) } },
+    }), [categories]);
+
+    return (
+        <>
+            <ToastContainer />
+            {chartData.length > 0 && categories.length > 0 && (
+    <ReactApexChart className="apex-charts" series={chartData} options={options} type="bar" height={350} />
+)}
+
+        </>
+    );
 };
 
 export { TopSalon };
