@@ -10,15 +10,37 @@ export const Insalonappointment = (query:any) => api.get(url.Insalonappointment+
 
 
 // Fetch the list of all appointments
-export const generatereport = async (startDate: any, endDate: any): Promise<any> => {
-    try {
-        const response = await axios.get(`${url.Generatereport}?startDate=` + startDate + `&endDate=` + endDate);
-        console.log("Fetched report:", response);
-        return response;
-    } catch (error) {
-        console.error("Error fetching report:", error);
-        throw error;
-    }
+// export const generatereport = async (startDate: any, endDate: any): Promise<any> => {
+//     try {
+//         const response = await axios.get(`${url.Generatereport}?startDate=` + startDate + `&endDate=` + endDate);
+//         console.log("Fetched report:", response);
+//         return response;
+//     } catch (error) {
+//         console.error("Error fetching report:", error);
+//         throw error;
+//     }
+// };
+
+export const generatereport = async (
+  startDate: any,
+  endDate: any,
+  salonId?: string,
+  barberId?: string
+): Promise<any> => {
+  try {
+    // Construct query parameters dynamically
+    let queryParams = `?startDate=${startDate}&endDate=${endDate}`;
+
+    if (salonId) queryParams += `&salonId=${salonId}`;
+    if (barberId) queryParams += `&barberId=${barberId}`;
+
+    const response = await axios.get(`${url.Generatereport}${queryParams}`);
+    console.log("Fetched sales report:", response);
+    return response;
+  } catch (error) {
+    console.error("Error fetching report:", error);
+    throw error;
+  }
 };
 
 // Fetch the list of all appointments

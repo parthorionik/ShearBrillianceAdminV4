@@ -1243,7 +1243,7 @@ const Scheduleappointment = () => {
                   </div>
                   {/* Tab Content  */}
                   <TabContent activeTab={activeArrowTab}>
-                    {showLoader && <Loader />}
+                
                     {/* Select Salon 1 */}
                     <TabPane id="steparrow-description-info" tabId={1}>
                       <div className="d-flex align-items-start gap-3 mt-4">
