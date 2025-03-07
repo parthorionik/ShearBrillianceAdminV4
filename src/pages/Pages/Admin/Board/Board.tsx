@@ -2262,7 +2262,7 @@ const Board = () => {
                                                   card.paymentMode
                                                 )}
                                               </span>
-                                            </div>
+                                            </div> 
                                             <div className="flex-grow-1">
                                               <b>Payment:</b>
                                               <b
@@ -2299,6 +2299,13 @@ const Board = () => {
                                                     Receipt
                                                   </Link>
                                                 )}
+                                            </div>
+                                            <div className="flex-grow-1">
+                                              <b>Tip: </b>
+                                              <span>
+                                                ${card.paymentDetails
+                                                        ?.tip ?? 0}
+                                              </span>
                                             </div>
                                           </div>
                                         </div>
