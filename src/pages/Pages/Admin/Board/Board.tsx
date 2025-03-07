@@ -141,7 +141,7 @@ const Board = () => {
   const [startIndex, setStartIndex] = useState(0);
   const [activeFilter, setActiveFilter] = useState("All");
   const [activeFilterBarber, setActiveFilterBarber] = useState<any>();
-  const [tipPercentage, setTipPercentage] = useState(null);
+  const [tipPercentage, setTipPercentage] = useState<any>(0);
   const [customTip, setCustomTip] = useState("");
   const [isInvalid, setIsInvalid] = useState(false);
 

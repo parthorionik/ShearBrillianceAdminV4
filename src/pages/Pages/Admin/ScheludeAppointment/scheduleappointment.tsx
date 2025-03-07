@@ -100,7 +100,7 @@ const Scheduleappointment = () => {
   const [timeSlots, setTimeSlots] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<any | null>(null);
-  const [tipPercentage, setTipPercentage] = useState(null);
+  const [tipPercentage, setTipPercentage] = useState<any>(0);
   const [customTip, setCustomTip] = useState("");
   const [isInvalid, setIsInvalid] = useState(false);
   

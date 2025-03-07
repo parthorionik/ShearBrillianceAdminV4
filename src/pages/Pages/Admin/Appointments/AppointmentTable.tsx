@@ -78,7 +78,7 @@ const AppointmentTable: React.FC = () => {
   const [selectedSearchText, selectedSearch] = useState<null>();
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
-  const [tipPercentage, setTipPercentage] = useState(null);
+  const [tipPercentage, setTipPercentage] = useState<any>(0);
   const [customTip, setCustomTip] = useState("");
   const [isInvalid, setIsInvalid] = useState(false);
   
