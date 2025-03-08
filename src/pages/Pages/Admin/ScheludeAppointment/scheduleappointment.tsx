@@ -98,7 +98,7 @@ const Scheduleappointment = () => {
   const [timeSlotData, setTimeSlotData] = useState<any[]>([]);
   const [timeSlotVisible, setTimeSlotVisible] = useState(false);
   const [timeSlots, setTimeSlots] = useState<any[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<any | null>(null);
   const [tipPercentage, setTipPercentage] = useState<any>(0);
   const [customTip, setCustomTip] = useState("");
@@ -1693,25 +1693,21 @@ const Scheduleappointment = () => {
                                         Select Date
                                       </Label>
                                       <Flatpickr
-                                        className={`form-control bg-light border-light  ${
-                                          selectedDate
-                                            ? "selected-date-highlight"
-                                            : ""
-                                        }`}
-                                        options={{
-                                          dateFormat: "Y-m-d",
-                                          minDate: new Date(),
-                                          maxDate: new Date(
-                                            new Date().setDate(
-                                              new Date().getDate() + 30
-                                            )
-                                          ),
-                                        }}
-                                        onChange={(date: Date[]) => {
-                                          handleDateSelection(date);
-                                          setTimeSlotVisible(true);
-                                        }}
-                                      />
+  className={`form-control bg-light border-light  ${
+    selectedDate ? "selected-date-highlight" : ""
+  }`}
+  options={{
+    dateFormat: "Y-m-d",
+    minDate: new Date(),
+    maxDate: new Date(new Date().setDate(new Date().getDate() + 30)),
+    defaultDate: new Date(), // Set today's date as default
+  }}
+  onChange={(date: Date[]) => {
+    handleDateSelection(date);
+    setTimeSlotVisible(true);
+  }}
+/>
+
                                     </div>
                                   </Col>
                                   {/* Time Period Dropdown */}
