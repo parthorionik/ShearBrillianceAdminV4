@@ -1660,12 +1660,12 @@ const Board = () => {
           // if (!response.ok) {
           //   throw new Error("Failed to update status");
           // }
-        } catch (error) {
-          toast.error(
-            "Sorry, This Barber is already serving another appointment."
-          );
-          console.error("Error updating status:", error);
-
+        } catch (error: any) {
+          // Check if the error has a response property (Axios errors usually have this)
+          if (error.response && error.response.data) {
+            const apiMessage = error.response.data.message; // Extract the message from the response
+            toast.error(apiMessage || "An error occurred"); // Show the error message in a toaster
+          } 
           // Revert the UI changes if API fails
           const revertedLines = cards.map((line: any) => {
             if (line.id === source.droppableId) {
@@ -2305,6 +2305,13 @@ const Board = () => {
                                               <span>
                                                 ${card.paymentDetails
                                                         ?.tip ?? 0}
+                                              </span>
+                                            </div>
+                                            <div className="flex-grow-1">
+                                              <b>Total amount: </b>
+                                              <span>
+                                                ${card.paymentDetails
+                                                        ?.totalAmount ?? 0}
                                               </span>
                                             </div>
                                           </div>
