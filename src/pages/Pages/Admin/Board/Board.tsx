@@ -790,7 +790,7 @@ const Board = () => {
     authSalonUser = JSON.parse(authSalonUser);
   }
   const handleDragEnd = async (result: any) => {
-    if (!result.destination) return; // If dropped outside a valid drop area, do nothing
+    if (!result.destination || result.destination.droppableId === result.source.droppableId) return; // If dropped outside a valid drop area, do nothing
     setSelectedCard(result);
     setSelectedCardOldStatus(null);
     setSelectedCardNewStatus(null);
