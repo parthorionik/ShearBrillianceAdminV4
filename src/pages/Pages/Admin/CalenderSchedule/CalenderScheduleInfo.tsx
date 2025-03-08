@@ -652,6 +652,7 @@ const cancelPopoverRemoval = () => {
 
   const confirmStatusChange = async () => {
     try {
+      
       if (appointmentId) {
         setShowSpinner(true);
         await updateAppointmentStatus(appointmentId, {
