@@ -1,4 +1,5 @@
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
+import { useEffect, useState } from "react";
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Spinner } from "reactstrap";
 
 const AppointmentConfirmationModal = ({
   isOpen = false,
@@ -9,6 +10,7 @@ const AppointmentConfirmationModal = ({
   isTransferBarber = false,
   isService = false,
   appointmentId,
+  showSpinner
   // appointmentInfo,
   // Ensure appointmentId is passed
 }: {
@@ -20,8 +22,25 @@ const AppointmentConfirmationModal = ({
   isTransferBarber: boolean;
   isService: boolean;
   appointmentId: string;
+  showSpinner?: boolean;
   // appointmentInfo:any  // Added appointmentId to props
 }) => {
+  const [showTempSpinner, setShowSpinner] = useState<boolean>(false);
+
+  // Reset the spinner state only when the modal is opened
+  useEffect(() => {
+    if (showSpinner) {
+      setTimeout(() => {
+        setShowSpinner(false);
+      }, 1000);
+    }
+  }, [showSpinner]);
+  
+  const setConfirmData = (selectedAppointmentId: any) => {
+    setShowSpinner(true);
+    onConfirm?.(selectedAppointmentId); // Invoke the onDeleteClick function if defined
+  }
+
   return (
     <Modal isOpen={isOpen} toggle={toggle} className="appointment-modal" centered backdrop="static">
       <ModalHeader toggle={toggle} className="modal-header">
@@ -60,8 +79,10 @@ const AppointmentConfirmationModal = ({
         <Button
           color="success"
           className="btn-confirm"
-          onClick={() => onConfirm(appointmentId)}  // Pass the appointmentId here
+          disabled={showTempSpinner} // Disable button while submitting
+          onClick={() => setConfirmData(appointmentId)}  // Pass the appointmentId here
         >
+          {showTempSpinner && <Spinner size="sm" className="me-2">Submitting...</Spinner>}
           Confirm
         </Button>
         <Button

@@ -653,9 +653,11 @@ const cancelPopoverRemoval = () => {
   const confirmStatusChange = async () => {
     try {
       if (appointmentId) {
+        setShowSpinner(true);
         await updateAppointmentStatus(appointmentId, {
           status: selectedStatus,
         }); // API call to update status
+        setShowSpinner(false);
         toggle();
         toggleModal(); // Close the modal
         filterAppointment();
@@ -1016,6 +1018,7 @@ const cancelPopoverRemoval = () => {
                     isTransferBarber={false}
                     isService={false}
                     appointmentId={appointmentId}
+                    showSpinner={showSpinner}
                   />
                 </div>
 
