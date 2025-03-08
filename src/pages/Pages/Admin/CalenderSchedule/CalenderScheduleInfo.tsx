@@ -644,6 +644,7 @@ const cancelPopoverRemoval = () => {
   //   }, [appointmentInfo]);
 
   const handleStatusChange = (newStatus: string) => {
+ 
     toggleModal(); // Open the confirmation modal
     setPreviousOption(selectedStatus);
     setSelectedStatus(newStatus); // Set the new status
@@ -652,6 +653,7 @@ const cancelPopoverRemoval = () => {
 
   const confirmStatusChange = async () => {
     try {
+      debugger
       if (appointmentId) {
         await updateAppointmentStatus(appointmentId, {
           status: selectedStatus,
