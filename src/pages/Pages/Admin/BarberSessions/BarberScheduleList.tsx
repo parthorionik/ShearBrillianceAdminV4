@@ -396,6 +396,9 @@ const BarberScheduleList = ({ salonNames, onReload }: any) => {
         await cancelAppointment(appointmentId); // API call with appointment ID
         toast.success("Cancel appointment successfully");
         setAppointmentId(null);
+        if (onReload) {
+          onReload(); // Trigger parent reload function
+        }
         toggleConfirmModal(); // Close modal
         // Ensure selectedLeave and barber exist before modifying appointments
         if (newBarberSession && newBarberSession?.appointments) {
