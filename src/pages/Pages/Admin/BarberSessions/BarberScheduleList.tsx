@@ -219,6 +219,17 @@ const BarberScheduleList = ({ salonNames, onReload }: any) => {
 
   const handleTimeChange = (type: 'start_time' | 'end_time', value: string) => {
     formik.setFieldValue(type, value);
+
+    if (type === 'start_time') {
+      const now = new Date();
+      const selectedDate = formik.values?.session_date; // Ensure this holds the selected date
+      const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+      if (!selectedDate) {
+        if (value >= currentTime) {
+          formik.setFieldError('start_time', ''); // Clear error if valid
+        }
+      }
+    }
     // const updatedSchedule = [...schedule];
     // updatedSchedule[index][type] = value;
     // setSchedule(updatedSchedule);
@@ -226,6 +237,21 @@ const BarberScheduleList = ({ salonNames, onReload }: any) => {
 
 
   const validateStartTime = (startTime: any, endTime: any) => {
+    const now = new Date();
+    const selectedDate = formik.values?.session_date; // Ensure this holds the selected date
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); // Get current time in HH:mm format
+
+    if (!startTime) return;
+    if (!selectedDate) {
+      if (startTime < currentTime) {
+        toast.error(`Start time cannot be in the past. Please select a valid time.`, {
+          autoClose: 3000,
+        });
+        formik.setFieldValue('start_time', '');
+        return;
+      }
+    }
+
     if (startTime && (startTime < salonNames.salon.open_time_temp || startTime > salonNames.salon.close_time_temp)) {
       toast.error(`Start time must be later than ${salonNames.startTimeAMPM} and later than end time`, {
         autoClose: 3000,
@@ -724,7 +750,7 @@ const BarberScheduleList = ({ salonNames, onReload }: any) => {
                     Date
                   </Label>
                 </div>
-                <b className="text-muted"> {newBarberSession?.session_date ? format(newBarberSession?.session_date, 'MMMM d, yyyy') : null} </b>
+                <b className="text-muted"> {newBarberSession?.session_date ? format(newBarberSession?.session_date, 'MMMM d, yyyy') : format(new Date(), 'MMMM d, yyyy')} </b>
                 {/* )} */}
 
               </Col>
