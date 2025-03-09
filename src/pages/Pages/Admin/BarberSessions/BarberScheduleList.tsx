@@ -237,7 +237,6 @@ const BarberScheduleList = ({ salonNames, onReload }: any) => {
 
 
   const validateStartTime = (startTime: any, endTime: any) => {
-    const now = new Date();
     const selectedDate = formik.values?.session_date; // Ensure this holds the selected date
     const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); // Get current time in HH:mm format
 
@@ -338,7 +337,7 @@ const BarberScheduleList = ({ salonNames, onReload }: any) => {
         values.end_time = "";
       }
       if (newBarberSession?.isGeneralSchedule) {
-        values.session_date = format(new Date(newBarberSession?.session_date), 'yyyy-MM-dd');
+        values.session_date = newBarberSession?.session_date ? format(new Date(newBarberSession?.session_date), 'yyyy-MM-dd') : today;
       }
       if (newBarberSession?.id) {
         updateBarberSession(values.id, values)
@@ -352,17 +351,24 @@ const BarberScheduleList = ({ salonNames, onReload }: any) => {
             }
             toggle();
           })
-          .catch((error) => {
-            console.error("Error updating Barber schedule:", error);
+          .catch((error: any) => {
+            // Check if the error has a response property (Axios errors usually have this)
+            if (error.response && error.response.data) {
+              const apiMessage = error.response.data.message; // Extract the message from the response
+              toast.error(apiMessage || "An error occurred"); // Show the error message in a toaster
+            } else {
+              // Fallback for other types of errors
+              toast.error(error.message || "Something went wrong");
+            }
             setShowSpinner(false);
           });
-      } else {
+      } else { 
         const obj = {
           BarberId: values.BarberId,
           SalonId: values.SalonId,
           availableDays: [
             {
-              date: formatDateShort(values.session_date),
+              date: values.session_date ? formatDateShort(values.session_date) : formatDateShort(today),
               startTime: values.start_time,
               endTime: values.end_time,
             },
@@ -380,8 +386,15 @@ const BarberScheduleList = ({ salonNames, onReload }: any) => {
             }
             toggle();
           })
-          .catch((error) => {
-            console.error("Error adding Barber schedule:", error);
+          .catch((error: any) => {
+            // Check if the error has a response property (Axios errors usually have this)
+            if (error.response && error.response.data) {
+              const apiMessage = error.response.data.message; // Extract the message from the response
+              toast.error(apiMessage || "An error occurred"); // Show the error message in a toaster
+            } else {
+              // Fallback for other types of errors
+              toast.error(error.message || "Something went wrong");
+            }
             setShowSpinner(false);
           });
       }
