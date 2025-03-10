@@ -439,7 +439,6 @@ const cancelPopoverRemoval = () => {
     }
   };
   const handleEventClick = (arg: any) => {
-    debugger
     cancelPopoverRemoval(); // Stop previous popover removal process
     // Ensure old popovers are removed
     removeFullCalendarPopovers();

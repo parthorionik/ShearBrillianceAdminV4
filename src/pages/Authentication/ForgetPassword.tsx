@@ -37,7 +37,6 @@ const ForgetPasswordPage = (props: any) => {
       email: Yup.string().matches(emailValidationRegex, "Enter valid email!!").required("Please Enter Your Email"),
     }),
     onSubmit: async (values) => {
-      debugger
       try {
         setLoader(true);
         // Dispatch the forgot password action with the email value
@@ -50,22 +49,28 @@ const ForgetPasswordPage = (props: any) => {
           // Handle error display if needed
         }
         validation.resetForm();
-        toast.success("Send email Successfully", { autoClose: 3000 });
+        toast.success("Reset password link successfully sent to your registered email address", { autoClose: 3000 });
         setLoader(false);
       } catch (error: any) {
         if (error.response && error.response.data) {
-          const apiMessage = error.response.data.message; // Extract the message from the response
-          toast.error(apiMessage || "An error occurred"); // Show the error message in a toaster 
-          setLoader(false);
+          const apiMessage = error.response.data.message;
+
+          if (error.response.data.code === 400) {
+            toast.warning(apiMessage, { autoClose: 3000 }); // Show warning toast for validation errors
+          } else {
+            toast.error(apiMessage || "An error occurred", { autoClose: 3000 });
+          }
         } else {
           // Fallback for other types of errors
           toast.error(error.message || "Something went wrong");
           setLoader(false);
         }
+      } finally {
+        setLoader(false);
       }
     },
   });
- 
+
   return (
     <ParticlesAuth>
       <div className="auth-page-content mt-lg-5">
@@ -123,7 +128,7 @@ const ForgetPasswordPage = (props: any) => {
 
                     <div className="text-center mt-4">
                       <button className="btn btn-success w-100" type="submit" disabled={loader}>
-                      {loader && <Spinner size="sm" className='me-2'> Loading... </Spinner>}
+                        {loader && <Spinner size="sm" className='me-2'> Loading... </Spinner>}
                         Send
                       </button>
                     </div>
